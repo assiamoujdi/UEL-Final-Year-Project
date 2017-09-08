@@ -1,5 +1,3 @@
-<!-- MAKE REMOVE LECTURER A POP UP INSTEAD OF A FORM IF POSSIBLE -->
-
 <!DOCTYPE html>
 <html>
 	<?php 

@@ -58,12 +58,6 @@
 </html>
 
 <?php
-  $conn = mysqli_connect('localhost', 'root', '', 'project');
-
-  if (!$conn) {
-    die("Connection failed: ".mysqli_connect_err());
-  }
-
   if(isset($_POST['submit'])) {
 
     $username = $_POST['userid'];
@@ -83,13 +77,13 @@
 
         if(isset($_SESSION['rank'])) {
           if($_SESSION['rank'] == 'Admin' || $row['rank'] == 'admin') {
-            header("Location: home/adminHome.php?id=$username");
+            header("Location: home/adminHome.php");
           }
           else if($_SESSION['rank'] == 'Lecturer' || $row['rank'] == 'lecturer') {
-            header("Location: home/lecturerHome.php?id=$username");
+            header("Location: home/lecturerHome.php");
           }
           else if($_SESSION['rank'] == 'Student' || $row['rank'] == 'student') {
-            header("Location: home/studentHome.php?id=$username");
+            header("Location: home/studentHome.php");
           }
         }
       }

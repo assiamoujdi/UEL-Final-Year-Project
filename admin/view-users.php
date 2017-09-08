@@ -1,5 +1,3 @@
-<!-- FILE DOES NOT UPLOAD USERS PROPERLY - 1ST ROW IGNORED -->
-
 <?php
 $host = "localhost"; 
 $user = "root"; 
@@ -29,7 +27,7 @@ if (isset($_POST['submit'])) {
          FIELDS TERMINATED BY ','
          LINES TERMINATED BY '\n'
 
-        (id,name,surname,email,username,password,rank,level,supervisor,second_supervisor,modules)
+        (id,name,surname,email,username,password,rank,level)
 eof;
         if (!$result = mysqli_query($con, $query)) {
             exit(mysqli_error($con));

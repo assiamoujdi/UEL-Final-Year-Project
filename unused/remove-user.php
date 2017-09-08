@@ -91,7 +91,7 @@
 	<script src="../js/bootstrap.min.js"></script>
 	<script>
 		function goBack() {
-			window.location = 'view-users.php';
+			window.location = '../home/adminHome.php';
 		}
 	</script>
 </body>

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>	
 	<?php 
-		include "../includes/admin-navbar.php";
-		include "../db_handler.php"; 
+		include "../includes/navbar.php";
+		include "../db_handler.php";
 	?>
 	<head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,17 +26,16 @@
 				
 			        while($row = mysqli_fetch_array($result)) { 
 			        	$name = $row['name'];
-						echo " " . $name . " (Admin)";
+						echo " " . $name . " (Supervisor)";
 					}
 				}
 			?>
 		</h1>
 		<hr>
-		<div class="col-md-6">
-			<h3>Manegment</h3>
-			<button type="button" class="btn btn-success"><a href="../admin/view-users.php">View Users</a></button>
-			<button type="button" class="btn btn-primary"><a href="../admin/add-user.php">Add User</a></button>
-			<button type="button" class="btn btn-danger"><a href="../admin/add-module.php">Add Module</a></button>
+		<div class="col-md-6"><h3>User Manegment</h3>
+			<button type="button" class="btn btn-success"><a href="../admin/view-modules.php">View Modules</a></button>
+			<button type="button" class="btn btn-primary"><a href="../supervisor/students-view.php">Assign Tutors</a></button>
+			<button type="button" class="btn btn-warning"><a href="../supervisor/view-students.php">View Students</a></button>
 		</div>
 		</div>
 	</body>

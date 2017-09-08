@@ -1,5 +1,3 @@
-<!-- ONLY ASSESSMENTS FOR 1ST ROW IN TABLE SHOW -->
-
 <!DOCTYPE html>
 <html>
 	<?php 
@@ -23,15 +21,13 @@
 			<div class="wrapper">
 			<h1>Welcome
 			<?php 
-				if (isset($_GET['id'])) {
-					$user = mysqli_real_escape_string($conn, $_GET['id']);
-					$sql = "SELECT * FROM users WHERE username = '$user'"; 
-					$result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
-				
-			        while($row = mysqli_fetch_array($result)) { 
-			        	$name = $row['name'];
-						echo " " . $name . " (Student)";
-					}
+				$user = $_SESSION['id'];
+				$sql = "SELECT * FROM users WHERE username = '$user'"; 
+				$result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
+			
+		        while($row = mysqli_fetch_array($result)) { 
+		        	$name = $row['name'];
+					echo " " . $name . " (Student)";
 				}
 			?>
 		</h1>
@@ -48,60 +44,46 @@
                         <th>Module Name</th>
                         <th>Module Leader</th>
                         <th>Description</th>
-                        <th>Assessment 1</th>
-                        <th>Assessment 2</th>
                     </tr>
                 </thead>
                 <tbody>
-                	<?php
-	                    if (isset($_GET['id'])) {   				
-							$user = mysqli_real_escape_string($conn, $_GET['id']);
-							$sql = "SELECT level FROM users WHERE username = '$user'"; 
+                	<?php 
+                    	$user = $_SESSION['id']; 				
+						$sql = "SELECT level FROM users WHERE username = '$user'"; 
 
-							$res = mysqli_query($conn, $sql); // SAVES 'sql' QUERY RESULT
-							$test = mysqli_fetch_array($res); // FETCHES THE DATA FROM THAT RESULT
+						$res = mysqli_query($conn, $sql); // SAVES 'sql' QUERY RESULT
+						$test = mysqli_fetch_array($res); // FETCHES THE DATA FROM THAT RESULT
 
-							$level = $test['level']; // SAVES THE ARRAY AS A STRING
-							$query = "SELECT * FROM module WHERE level = '$level'"; // SEARCHES THE 'module' TABLE BASED ON THE 'level' IN 'users' TABLE
+						$level = $test['level']; // SAVES THE ARRAY AS A STRING
+						$query = "SELECT * FROM module WHERE level = '$level'"; // SEARCHES THE 'module' TABLE BASED ON THE 'level' IN 'users' TABLE
 
-							$result = mysqli_query($conn, $query) or die(mysqli_error($conn));
-							$check = mysqli_query($conn, $query); // SAVES 'sql' QUERY RESULT
-							$acheck = mysqli_fetch_array($check); // FETCHES THE DATA FROM THAT RESULT
+						$result = mysqli_query($conn, $query) or die(mysqli_error($conn));
 
-							$a1 = $acheck['assessment1']; // SAVES THE ARRAY AS A STRING
-							$a2 = $acheck['assessment2']; // SAVES THE ARRAY AS A STRING
+						$output = '';				
+				        while($row = mysqli_fetch_array($result)) {                               
+	                    	$output .= '
+	                    	<tr>
+	                        	<td>'.$row["module_code"].'</td>
+	                            <td>'.$row["module_name"].'</td>';
 
-							$asql = "SELECT DISTINCT name, weighs FROM assessment WHERE assessment_code = '$a1'";
-							$aresult = mysqli_query($conn, $asql) or die(mysqli_error($conn));
+	                            $lid = $row["module_leader"];
 
-							$asql1 = "SELECT DISTINCT name, weighs FROM assessment WHERE assessment_code = '$a2'";
-							$aresult1 = mysqli_query($conn, $asql1) or die(mysqli_error($conn));
+	                            $asql2 = "SELECT name, surname FROM users WHERE id = '$lid'";
+								$res1 = mysqli_query($conn, $asql2) or die(mysqli_error($conn));
 
-							$output = '';				
-					        while($row = mysqli_fetch_array($result)) {                               
-		                    	$output .= '
-		                    	<tr>
-		                        	<td>'.$row["module_code"].'</td>
-		                            <td>'.$row["module_name"].'</td>
-		                            <td>'.$row["module_leader"].'</td>
-		                            <td>'.$row["description"].'</td>	                    
-		                          ';
-
-		  	                    while($arow = mysqli_fetch_array($aresult)) {                               
+	                            while($arow = mysqli_fetch_array($res1)) {
 			                    	$output .= '
-			                            <td>'.$arow["name"].' ('.$arow["weighs"].')'.'</td>
+			                            <td>'.$arow["name"].' '.$arow["surname"].'</td>
 			                          ';
 			                    }
 
-			                    while($arow1 = mysqli_fetch_array($aresult1)) {                               
-			                    	$output .= '
-			                            <td>'.$arow1["name"].' ('.$arow1["weighs"].')'.'</td>
-			                        </tr>
-			                          ';
-			                    }
-		                    }
-		                    echo $output;
+	                            $output .= '		                            
+	                            	<td>'.$row["description"].'</td>
+                        	</tr>                    
+                          ';
+
 	                    }
+	                    echo $output;
                     ?>
                     </tbody>
                 </table>
@@ -123,65 +105,109 @@
                     </tr>
                 </thead>
                 <tbody>
-                	<?php
-	                    if (isset($_GET['id'])) {   				
-							$user = mysqli_real_escape_string($conn, $_GET['id']);
-							$query = "SELECT id FROM users WHERE username = '$user'";
-							
-							$res = mysqli_query($conn, $query); // SAVES 'sql' QUERY RESULT
-							$test = mysqli_fetch_array($res); // FETCHES THE DATA FROM THAT RESULT
+                	<?php  				
+						$user = $_SESSION['id'];
+						$query = "SELECT id FROM users WHERE username = '$user'";
+						
+						$res = mysqli_query($conn, $query); // SAVES 'sql' QUERY RESULT
+						$test = mysqli_fetch_array($res); // FETCHES THE DATA FROM THAT RESULT
 
-							$sid = $test['id']; // SAVES THE ARRAY AS A STRING
+						$sid = $test['id']; // SAVES THE ARRAY AS A STRING
 
-							$sql = "SELECT module_code, sub_assessment, final_mark, feedback FROM marks WHERE student_id = '$sid'"; 
-							$result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
+						$sql = "SELECT module_code, sub_assessment, final_mark, feedback FROM marks WHERE student_id = '$sid'"; 
+						$result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
 
-							$check = mysqli_query($conn, $sql); // SAVES 'sql' QUERY RESULT
-							$acheck = mysqli_fetch_array($check); // FETCHES THE DATA FROM THAT 
+						$check = mysqli_query($conn, $sql); // SAVES 'sql' QUERY RESULT
+						$acheck = mysqli_fetch_array($check); // FETCHES THE DATA FROM THAT 
 
-							$mcode = $acheck['module_code'];
+						$mcode = $acheck['module_code'];
 
-							$state = "SELECT module_name FROM module WHERE module_code = '$mcode'";
+						$state = "SELECT module_name FROM module WHERE module_code = '$mcode'";
+						$aresult = mysqli_query($conn, $state);
+
+						$acode = $acheck['sub_assessment'];
+
+						$astate = "SELECT sub_assessment FROM assessment WHERE sub_assessment = '$acode'";
+						$bresult = mysqli_query($conn, $astate);
+
+						$output = '';				
+				        while($row = mysqli_fetch_array($result)) {                               
+	                    	$output .= '
+	                    	<tr>
+	                        	<td>'.$row["module_code"].'</td>	                    
+	                          ';
+
+	  	                    while($arow = mysqli_fetch_array($aresult)) {                               
+		                    	$output .= '
+		                            <td>'.$arow["module_name"].'</td>
+		                          ';
+		                    }
+
+		                    $state = "SELECT module_name FROM module WHERE module_code = '$mcode'";
 							$aresult = mysqli_query($conn, $state);
 
 							$acode = $acheck['sub_assessment'];
 
 							$astate = "SELECT sub_assessment FROM assessment WHERE sub_assessment = '$acode'";
 							$bresult = mysqli_query($conn, $astate);
-							
-							$output = '';				
-					        while($row = mysqli_fetch_array($result)) {                               
-		                    	$output .= '
-		                    	<tr>
-		                        	<td>'.$row["module_code"].'</td>	                    
-		                          ';
 
-		  	                    while($arow = mysqli_fetch_array($aresult)) {                               
+		                    $output .= '
+		                    	<td>'.$row["sub_assessment"].'</td>
+		                    	<td>'.$row["final_mark"].'</td>
+		                    	<td>'.$row["feedback"].'</td>
+		                    </tr>
+		                    ';
+	                    }
+
+	                    $sql1 = "SELECT DISTINCT module_code, assessment_code, total_marks, feedback FROM marking_scheme_marks WHERE student_id = '$sid'";
+						$result1 = mysqli_query($conn, $sql1) or die(mysqli_error($conn));
+
+						$get = mysqli_query($conn, $sql1); // SAVES 'sql' QUERY RESULT
+						$got = mysqli_fetch_array($get); // FETCHES THE DATA FROM THAT 
+
+						$mcode = $got['module_code'];
+						$acode = $got['assessment_code'];
+
+						$sql2 = "SELECT module_name FROM module WHERE module_code = '$mcode'";
+						$result2 = mysqli_query($conn, $sql2);
+
+						$sql3 = "SELECT name FROM assessment WHERE assessment_code = '$acode'";
+						$result3 = mysqli_query($conn, $sql3);
+
+	                    while($row1 = mysqli_fetch_array($result1)) {                               
+	                    	$output .= '
+	                    	<tr>
+	                        	<td>'.$row1["module_code"].'</td>';
+
+	                        	while($arow = mysqli_fetch_array($result2)) {
 			                    	$output .= '
 			                            <td>'.$arow["module_name"].'</td>
 			                          ';
 			                    }
 
-			                    while($arow1 = mysqli_fetch_array($bresult)) {                               
+			                    while($arow1 = mysqli_fetch_array($result3)) {
 			                    	$output .= '
-			                            <td>'.$arow1["sub_assessment"].'</td>
+			                            <td>'.$arow1["name"].'</td>
 			                          ';
 			                    }
-			                    $output .= ' 
-			                    	<td>'.$row["final_mark"].'</td>
-			                    	<td>'.$row["feedback"].'</td>
-			                    </tr>
-			                    ';
-		                    }
-		                    echo $output;
+
+	                        	$output .='	                    
+		                    	<td>'.$row1["total_marks"].'</td>
+		                    	<td>
+                                	<div class="btn-group">
+	                                      <button type="button" class="btn btn-success"><a href="../admin/view-marking-scheme.php?id=' . $acode . '">View Feedback</a></button>
+                                  	</div>
+                             	</td>
+	                    	</tr>
+		                    ';
 	                    }
+	                    echo $output;
                     ?>
                     </tbody>
                 </table>
             </div>
 		</div>
 	</body>
-		<?php include "../includes/footer.php" ?>
 	</div>
 </html>
 

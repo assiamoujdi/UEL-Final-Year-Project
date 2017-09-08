@@ -1,3 +1,10 @@
+<!-- NEED TO FIX DATABASE CONNECTION -->
+<!-- FIX TABLE WIDTH - MAKE RESPONSIVE -->
+
+<!-- SHOW ALERTS IF PERCENTAGE IS NOT 100 -->
+
+<!-- ON ASSESSMENT PAGE SO THIS IS NOT NEEDED -->
+
 <!DOCTYPE html>
 <html>
 	<?php 
@@ -18,22 +25,14 @@
 <body>
 	<?php 
 	if (isset($_GET['id'])) {
-		$assess = mysqli_real_escape_string($conn, $_GET['id']);
+		$module = mysqli_real_escape_string($conn, $_GET['id']);
 
-		$sql = "SELECT * FROM assessment WHERE assessment_code = '$assess'"; 
+		$sql = "SELECT * FROM module WHERE module_code = '$module'"; 
 		$result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
 	
         while($row = mysqli_fetch_array($result)) { 
         	$mcode = $row['module_code'];
-        	$aname = $row['name'];
-        	$asuba = $row['sub_assessment'];
-		}
-
-		$sql1 = "SELECT module_name FROM module WHERE module_code = '$mcode'";
-		$result1 = mysqli_query($conn, $sql1) or die(mysqli_error($conn));
-
-		while($row1 = mysqli_fetch_array($result1)) { 
-        	$mname = $row1['module_name'];
+        	$mname = $row['module_name'];
 		}
 	}
 	?>
@@ -41,7 +40,7 @@
 		<div id="page-wrapper">
 			<div class="container-fluid">
 				<div class="container">
-				    <h1>Marking Scheme For <?php echo $mcode .' - '. $aname; if($asuba != " ") {echo ": " . $asuba;} ?></h1>
+				    <h1>Marking Scheme For <?php echo $mcode .' - '. $mname ?></h1>
 				  	<hr>
 					<div class="row">
 				      <div class="col-md-9 personal-info">
@@ -56,7 +55,7 @@
 				          <div class="form-group">
 				            <label class="col-lg-3 control-label">Module Name:</label>
 				            <div class="col-lg-8">
-				              <input class="form-control" type="text" id="name" name="name" value="<?php print $mname; ?>" readonly>
+				              <input class="form-control" type="text" id="name" name="name" value="<?php if (isset($_GET['id'])) { print $mname; }?>" readonly>
 				            </div>
 				          </div>
 				          <?php
@@ -68,11 +67,20 @@
 			                }
 		            	  ?>
   				          <div class="form-group">
-				            <label class="col-lg-3 control-label">Assessment Name:</label>
-				            <div class="col-lg-8">
-				              <input class="form-control" type="text" id="assessment" name="assessment" value="<?php print $aname; if($asuba != " ") {echo ": " . $asuba;} ?>" readonly>
-				            </div>
-				          </div>
+	                        	<label for="ModuleDetails" class="col-md-3 control-label">Assessment Name/Type:</label>
+			                        <div class="col-md-8">
+										<select name="assessment" id="assessment" class="selectpicker" data-show-subtext="true" required>
+											<option selected="selected" disabled>-- SELECT --</option>
+											<?php 
+												$query = "SELECT name, weighs, sub_assessment FROM assessment";
+									            $result = mysqli_query($conn, $query) or die(mysqli_error($conn));
+									            while ($row = mysqli_fetch_array($result)) {
+									                echo "<option value='$row[0]'>$row[0] $row[1] - Sub Assessment: $row[2]</option>";
+									            }
+											?>        
+			                            </select>
+			                        </div>
+	                    	</div>
 						  <div class="form-group">
 						  	<label class="col-lg-3 control-label">Areas For Marking:</label>
 				            <div class="col-lg-8">
@@ -107,13 +115,13 @@
 													<tr id='addr0'>
 														<td>1</td>
 														<td>
-															<input type="text" name='sname[]'  placeholder='Criteria' class="form-control"/>
+															<input type="text" name='sname[]'  placeholder='Area Name' class="form-control"/>
 														</td>
 														<td>
-															<input type="text" name='squestions[]' placeholder='Description' class="form-control"/>
+															<input type="text" name='squestions[]' placeholder='Questions' class="form-control"/>
 														</td>
 														<td>
-															<input type="number" name='spercent[]' placeholder='  Percentage' class="spercentage"/>
+															<input type="number" name='spercentage[]' placeholder='  Percentage' class="spercentage"/>
 														</td>
 														<td>
 															<select name="schoice[]" class="form-control">
@@ -239,7 +247,7 @@
      $(document).ready(function(){
       var i=1;
      $("#add_row").click(function(){
-      $('#addr'+i).html("<td>"+ (i+1) +"</td><td><input name='sname[]"+i+"' type='text' placeholder='Criteria' class='form-control input-md'  /> </td><td><input  name='squestions[]"+i+"' type='text' placeholder='Description' class='form-control input-md'></td><td><input name='spercent[]"+i+"' type='text' placeholder='  Percentage' class='spercentage'></td><td><select name='schoice[]' class='form-control'><option selected='selected' disabled=''>-- SELECT --</option><option value='Yes'>Yes</option><option value='No'>No</option></select></td><td><input type='text' name='smarksrange[]' placeholder='Range' class='form-control'/></td>");
+      $('#addr'+i).html("<td>"+ (i+1) +"</td><td><input name='sname[]"+i+"' type='text' placeholder='Area Name' class='form-control input-md'  /> </td><td><input  name='squestions[]"+i+"' type='text' placeholder='Questions' class='form-control input-md'></td><td><input name='spercentage[]"+i+"' type='text' placeholder='  Percentage' class='spercentage'></td><td><select name='schoice[]' class='form-control'><option selected='selected' disabled=''>-- SELECT --</option><option value='Yes'>Yes</option><option value='No'>No</option></select></td><td><input type='text' name='smarksrange[]' placeholder='Range' class='form-control'/></td>");
 
       $('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
       i++; 
@@ -257,17 +265,46 @@
 <?php 
 	if(isset($_POST['submit'])) {
 		$id = mysqli_insert_id($conn);
-			foreach ($_POST['sname'] as $key => $value) {
-				$asname = $_POST['sname'][$key];
-				$asquestions = $_POST['squestions'][$key];
-				$aspercent = $_POST['spercent'][$key];
-				$art = $_POST['schoice'][$key];
-				$amr = $_POST['smarksrange'][$key];
+		$modulecode = mysqli_real_escape_string($conn, $_REQUEST['code']);
+		$modulename = mysqli_real_escape_string($conn, $_REQUEST['name']);
+		$totalmarks = mysqli_real_escape_string($conn, $_REQUEST['total']);
 
-				$query = "INSERT INTO marking_scheme (id, module_code, module_name, assessment_code, criteria, description, percentage, range_type, marks_range) VALUES ('" . $id . "', '" . $mcode . "', '" . $mname . "', '" . $assess . "', '" . $asname . "', '" . $asquestions . "', '" . $aspercent . "', '" . $art . "', '" . $amr . "')";
-				
-				$result = mysqli_query($conn, $query) or die(mysqli_error($conn));	
+		$stones = mysqli_real_escape_string($conn, $_REQUEST['assessment']);
+		$aquery = "SELECT assessment_code FROM assessment WHERE name = '$stones'"; // FINDS THE ASSESSMENT CODE BASED ON THE ASSESSMENT CHOSEN IN THE SELECTION LIST ABOVE
+
+		$testing = mysqli_query($conn, $aquery); // SAVES 'sql' QUERY RESULT
+		$atest = mysqli_fetch_array($testing); // FETCHES THE DATA FROM THAT RESULT
+
+		$acode = $atest['assessment_code']; // SAVES THE ARRAY AS A STRING
+
+		$totalMarksA = 0;
+
+		if (isset($_POST['smarks'])) {
+			foreach ($_POST['smarks'] as $key => $value) {
+				$marksA = $_POST['smarks'][$key];
+
+				$totalMarksA = $totalMarksA + $marksA;
 			}
+
+			if ($totalMarksA == $totalmarks) {
+				foreach ($_POST['sname'] as $key => $value) {
+					$asname = $_POST['sname'][$key];
+					$asquestions = $_POST['squestions'][$key];
+					$asmarks = $_POST['smarks'][$key];
+
+					$query = "INSERT INTO marking_scheme (id, module_code, module_name, assessment_code, total_marks, area_name, questions, marks_avaliable) VALUES ('" . $id . "', '" . $modulecode . "', '" . $modulename . "', '" . $acode . "', '" . $totalmarks . "', '" . $asname . "', '" . $asquestions . "', '" . $asmarks . "')";
+					
+					$result = mysqli_query($conn, $query) or die(mysqli_error($conn));	
+				}
+			}
+
+			else if ($totalMarksA < $totalmarks || $totalMarksA > $totalmarks) {
+				$emessageS = "Marks avaliable in topic areas do not add up to total marks avaliable. Current total of avaliable marks: " . $totalMarksA . ". Total stated avaliable: " . $totalmarks;
+
+				echo "<script type='text/javascript'>alert('$emessageS');history.go(-1);</script>";
+			}
+		}
+
 		mysqli_close($conn);
 		echo '<script type="text/javascript">','goBack();','</script>';
 	}

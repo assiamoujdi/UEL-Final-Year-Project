@@ -1,5 +1,7 @@
 <!-- MAKE SURE SELECT FIELDS ARE REQUIRED BEFORE SAVING TO THE DATABASE -->
 
+<!-- MAKE STUDENT NAME AND SURNAME SHOW ON SELECT STUDENT -->
+
 <!DOCTYPE html>
 <html>
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
@@ -49,7 +51,7 @@
                       	    <div class="form-group">
 	                        	<label for="ModuleDetails" class="col-md-3 control-label">Module Code & Name:</label>
 			                        <div class="col-md-8">
-										<select name="module" id="module" class="selectpicker" data-show-subtext="true" data-live-search="true" required>
+										<select class="form-group form-control" data-show-subtext="true" data-live-search="true" id="module" name="module" style="margin-left: -1px;" required>
 											<option selected="selected" disabled>-- SELECT --</option>
 											<?php 
 												$query = "SELECT DISTINCT module_code, module_name FROM lecturers WHERE lecturer_id = '$lid'";
@@ -64,7 +66,7 @@
 				          	<div class="form-group">
 	                        	<label for="ModuleDetails" class="col-md-3 control-label">Student ID:</label>
 			                        <div class="col-md-8">
-										<select name="student" id="student" class="selectpicker" data-show-subtext="true" data-live-search="true" required>
+										<select class="form-group form-control" data-show-subtext="true" data-live-search="true" id="student" name="student" style="margin-left: -1px;" required>
 											<option selected="selected" disabled>-- SELECT --</option>
 											<?php 
 												$query = "SELECT DISTINCT student_id FROM lecturers WHERE lecturer_id = '$lid'";
@@ -86,7 +88,7 @@
 
 									            $result = mysqli_query($conn, $statement) or die(mysqli_error($conn));
 									            while ($row = mysqli_fetch_array($result)) {
-									                echo "<option value='$row[7]'>$row[1] ($row[4]) - Sub Assessment: $row[7]</option>";
+									                echo "<option value='$row[0]'>$row[2] ($row[5]) - Sub Assessment: $row[9]</option>";
 									            }
 											?>
 		                            </select>
@@ -95,7 +97,7 @@
 				         	<div class="form-group">
 				            <label class="col-lg-3 control-label">Mark:</label>
 					            <div class="col-lg-8">
-					              <input class="form-control" type="text" id="mark" name="mark">
+					              <input class="form-control" type="text" id="mark" name="mark" min="0" max="100" required>
 					            </div>
 				          	</div>				          
   				          	<div class="form-group">
@@ -152,7 +154,7 @@
 	<script src="../js/bootstrap.min.js"></script>
 	<script>
 		function goBack() {
-			window.location.href = 'view-students.php';
+			window.location.href = '../home/lecturerHome.php';
 		}
 	</script>
 </body>

@@ -3,6 +3,7 @@
   <?php 
     include "../includes/header.php";
     include "../includes/lecturer-navbar.php";
+    include "../db_handler.php";
   ?>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,18 +18,27 @@
 <body>
 <div class="container">
     <div class="row">
-        <form class="form-horizontal" style="float: right;" action="view-assessments.php" method="post" name="export" enctype="multipart/form-data">
-          <div class="form-group">
-            <div class="col-md-4 col-md-offset-4">
-              <input type="submit" name="export" class="btn btn-success" value="Export As CSV File"/>
-            </div>
-          </div>                    
-        </form> 
-    	<h1>List Of Assessments</h1>
+    	<h1>List Of Assessments For 
+        <?php 
+            $module = mysqli_real_escape_string($conn, $_GET['id']);
+            $sql = "SELECT * FROM module WHERE module_code = '$module'"; 
+            $result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
+          
+                while($row = mysqli_fetch_array($result)) { 
+                  $mcode = $row['module_code'];
+                  $mname = $row['module_name'];
+            }
+
+            echo $mcode . " - " . $mname; 
+        ?> 
+      </h1>
     	<hr>
+      <div class="alert alert-warning" role="alert">
+        <strong>ALERT: </strong> To mark a student with a marking scheme for the selected module, select the assessment you wish to mark first.
+      </div>
         <div class="panel panel-primary filterable" style="border-color: #00bdaa;">
             <div class="panel-heading" style="background-color: #00bdaa;">
-                <h3 class="panel-title">Assessments</h3>
+                <h3 class="panel-title">Modules</h3>
                 <div class="pull-right">
                     <button class="btn btn-default btn-xs btn-filter"><span class="glyphicon glyphicon-filter"></span> Filter Search</button>
                 </div>
@@ -38,9 +48,11 @@
                     <tr class="filters">
                         <th><input type="text" class="form-control" placeholder="Assessment Name" disabled></th>
                         <th><input type="text" class="form-control" placeholder="Description" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Deadline" disabled></th>
                         <th><input type="text" class="form-control" placeholder="Sub Assessment" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="SA Description" disabled></th>
                         <th><input type="text" class="form-control" placeholder="SA Weight" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="SA Deadline" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Mark Student" disabled></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,35 +69,41 @@
                          $search = mysqli_real_escape_string($conn, $_POST["query"]);
                          $query = "
                           SELECT * FROM assessment 
-                          WHERE assessment_name LIKE '%".$search."%' 
+                          WHERE name LIKE '%".$search."%'
+                          OR description LIKE '%".$search."%' 
+                          OR sub_assessment LIKE '%".$search."%' 
                          ";
                         }
                         else
                         {
-                         $query = "
-                          SELECT * FROM assessment ORDER BY assessment_code asc
-                         ";
-                        }
-                        $result = mysqli_query($conn, $query);
-                        if(mysqli_num_rows($result) > 0)
-                        {
 
-                         while($row = mysqli_fetch_array($result))
-                         {
-                        $assessment = $row["name"];
-                            
-                          $output .= '
-                           <tr>
-                            <td>'.$row["name"].'</td>
-                            <td>'.$row["description"].'</td>
-                            <td>'.$row["sub_assessment"].'</td>
-                            <td>'.$row["sub_assessment_description"].'</td>
-                            <td>'.$row["sub_assessment_weight"].'</td>
-                           </tr>
-                          ';
-                         }
-                         echo $output;
+                          $mcode = mysqli_real_escape_string($conn, $_GET['id']);
+                          $sql = "SELECT * FROM assessment WHERE module_code = '$mcode'"; 
+
+                          $res = mysqli_query($conn, $sql);
+
                         }
+
+                        while($row = mysqli_fetch_array($res)) {
+                          $assessment = $row["assessment_code"];
+                              
+                            $output .= '
+                             <tr>
+                              <td>'.$row["name"].'</td>
+                              <td>'.$row["description"].'</td>
+                              <td>'.$row["deadline"].'</td>
+                              <td>'.$row["sub_assessment"].'</td>
+                              <td>'.$row["sub_assessment_weight"].'</td>
+                              <td>'.$row["sub_assessment_deadline"].'</td>
+
+                                <td class="text-center">
+                                  <button type="button" class="btn btn-success"><a href="add-mark.php?id=' . $assessment . '">Mark Student</a></button>
+                                </td>
+                              </tr>
+                              </div>
+                            ';
+                          }
+                        echo $output;
                     ?>
                     </tbody>
                 </table>
@@ -119,6 +137,12 @@
     }
     .filterable .filters input[disabled]:-ms-input-placeholder {
         color: #333;
+    }
+    button {
+      margin-left: -80px;
+    }
+    a {
+      color: white;
     }
 </style>
 
@@ -164,18 +188,3 @@
         });
     });
 </script>
-
-<?php 
-   if(isset($_POST["export"])){
-     
-      $result = "SELECT * FROM assessment";
-      $row = mysqli_query($conn, $result) or die(mysqli_error($conn));
-
-      $fp = fopen('../spreadsheets/assessments.csv', 'w');
-
-      while($val = mysqli_fetch_array($row, MYSQLI_ASSOC)){
-          fputcsv($fp, $val);
-      }
-      fclose($fp); 
-    }  
-?>

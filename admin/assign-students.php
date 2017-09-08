@@ -53,7 +53,7 @@
 									$query = "SELECT name, surname FROM users WHERE rank = 'lecturer' ORDER BY id ASC";
 									$result = mysqli_query($conn, $query);
 								   ?>
-									<select class="selectpicker" data-show-subtext="true" data-live-search="true" id="lecturer" name="lecturer">
+									<select class="form-group form-control" data-show-subtext="true" data-live-search="true" id="lecturer" name="lecturer" style="margin-left: -1px;" required>
 										<option selected="selected" disabled>-- SELECT --</option>
 										<?php 
 										while ($row = mysqli_fetch_array($result))
@@ -71,13 +71,6 @@
 							$test = mysqli_fetch_array($res); // FETCHES THE DATA FROM THAT RESULT
 
 							$mlevel = $test['level']; // SAVES THE ARRAY AS A STRING
-
-			                $query = "SELECT id, name, surname, level FROM users WHERE rank = 'student' AND level = '$mlevel'";
-			                $result = mysqli_query($conn, $query);
-			                $options = "";
-			                while ($row = mysqli_fetch_array($result)) {
-			                    $options = $options . "<option value='$row[0]'>$row[0] - $row[1] $row[2]</option>";
-			                }
 		            	  ?>
 		            	  <label class="col-lg-3 control-label"></label>
 		            	  <div class="col-lg-8">
@@ -88,11 +81,43 @@
 	                      <div class="form-group">
                         	<label class="col-lg-3 control-label">Students:</label>
                         	<div class="col-lg-8">
-                            	<select class="form-control" name="students[]" multiple>
-	                                <?php
-	                                	echo $options;
-	                                ?>
-                            	</select>
+								<div class="panel panel-default">
+									<div class="panel-body">
+										<div class="table-container">
+											<table class="table table-filter">
+												<tbody>
+													<th>Student Name</th>
+													<th>Assign To Lecturer?</th>
+													<tr data-status="pagado">
+													<?php
+					                                    $sql = "SELECT * FROM users WHERE rank = 'student' AND level ='$mlevel'"; 
+					                                    $result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
+
+					                                    $output = '';
+					                                    if(mysqli_num_rows($result) > 0)
+					                                    {
+
+					                                     while($row = mysqli_fetch_array($result))
+					                                     {
+					                                        
+					                                      $output .= '
+					                                       <tr>
+					                                            <td value="'.$row['id'].'">'.$row["name"]." ".$row["surname"].'</td>
+					                                            <td>
+																	<input type="checkbox" id="cbtest" name="cbtest[]" value="'.$row['id'].'" />
+				    												<label for="cbtest" class="check-box"></label> 
+					                                            </td>
+					                                      </tr>';
+					                                     }
+					                                     echo $output;
+					                                    }
+				                                	?>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
                         	</div>
                 		  </div>		          
 				          <div class="form-group">
@@ -137,12 +162,13 @@
 	    color: black;
 	    border: none;
 	}
+
 </style>
 
 <?php 
 	if(isset($_POST['submit'])) {
 		$id = mysqli_insert_id($conn);
-		$lname = mysqli_real_escape_string($conn, $_REQUEST['lecturer']); //CHANGE
+		$lname = mysqli_real_escape_string($conn, $_REQUEST['lecturer']); 
 
 		$query = "SELECT id FROM users WHERE name = '$lname'";
 
@@ -151,12 +177,11 @@
 
 		$lid = $test['id']; // SAVES THE ARRAY AS A STRING
 
-		foreach ($_POST['students'] as $key => $value) {
-			$sid = $_POST['students'][$key];
+		foreach ($_POST['cbtest'] as $key => $value) {
+			$sid = $_POST['cbtest'][$key];
 
 			$sql = "INSERT INTO lecturers (id, lecturer_id, student_id, module_code, module_name) VALUES ('" . $id . "', '" . $lid . "', '" . $sid . "', '" . $mcode . "', '" . $mname . "')";
 			$result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
-
 		}
 
 		mysqli_close($conn);

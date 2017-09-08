@@ -1,9 +1,24 @@
+<!-- EXTRA RECORD SAVED IN DATABASE WITH BLANK ENGAGEMENT POINT -->
+	<!-- FIX LATER -->
+
+<!-- MCODE AND MNAME ONLY SAVES THE LAST RECORD -->
+	<!-- FIX LATER BUT WILL BE NEEDED FOR VALIDATION -->
+
 <!DOCTYPE html>
 <html>
 	<?php 
 		include "../includes/header.php";
-		include "../includes/lecturer-navbar.php";
+		include "../includes/admin-navbar.php";
     	include "../db_handler.php";
+	?>
+	<?php
+		$get = "SELECT module_code, module_name FROM module;";
+		$got = mysqli_query($conn, $get);
+		
+		while($read = mysqli_fetch_array($got)) { 
+        	$mcode = $read['module_code'];
+        	$mname = $read['module_name'];
+		}
 	?>
 <head>
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
@@ -27,16 +42,22 @@
 				      <div class="col-md-9 personal-info">
 				        <h3>Module Information</h3>
 				        <form class="form-horizontal" role="form" method="post">
+				        <div class="alert alert-danger" role="alert" style="display: none;" id="alertUser">
+						  <strong>WARNING: </strong> The Module Code is already used. Please entered a different Module Code.
+						</div>
+						<div class="alert alert-danger" role="alert" style="display: none;" id="warnUser">
+						  <strong>WARNING: </strong> The Module Name is already used. Please entered a different Module Name.
+						</div>
 				        <div class="form-group">
 				            <label class="col-lg-3 control-label">Module Code:</label>
 				            <div class="col-lg-8">
-				              <input class="form-control" type="text" id="code" name="code">
+				              <input class="form-control" type="text" id="code" name="code" required>
 				            </div>
 				          </div>
 				          <div class="form-group">
 				            <label class="col-lg-3 control-label">Module Name:</label>
 				            <div class="col-lg-8">
-				              <input class="form-control" type="text" id="name" name="name">
+				              <input class="form-control" type="text" id="name" name="name" required>
 				            </div>
 				          </div>
 				          <div class="form-group">
@@ -55,16 +76,16 @@
 				            <label class="col-lg-3 control-label">Module Leader:</label> 
 				            <div class="col-lg-8">
 							      <?php
-									$query = "SELECT name, surname FROM users WHERE rank = 'lecturer' ORDER BY surname DESC";
-									$result = mysqli_query($conn, $query);
+										$query = "SELECT id, name, surname FROM users WHERE rank = 'lecturer' ORDER BY surname DESC";
+										$result = mysqli_query($conn, $query);
 								   ?>
-									<select class="selectpicker" data-show-subtext="true" data-live-search="true" id="leader" name="leader">
+									<select class="form-group form-control" data-show-subtext="true" data-live-search="true" id="leader" name="leader" style="margin-left: -1px;" required>
 										<option selected="selected" disabled>-- SELECT --</option>
 										<?php 
-										while ($row = mysqli_fetch_array($result))
-										{
-										    echo "<option value='$row[0]'>$row[0] $row[1]</option>";
-										}
+											while ($row = mysqli_fetch_array($result))
+											{
+											    echo "<option value='$row[0]'>$row[1] $row[2]</option>";
+											}
 										?>        
 									</select>
 				          	</div>
@@ -97,41 +118,6 @@
 			                    $choices = $choices . "<option value='$row[0]'>Name: $row[0]</option>";
 			                }
 		            	  ?>
-	                      <div class="form-group">
-                        	<label class="col-lg-3 control-label">Add Assessment 1:</label>
-                        	<div class="col-lg-8">
-								<select class="form-control" name="assessment1" id="assessment1">
-                            		<option selected="selected" disabled="">-- SELECT --</option>
-                            		<?php
-	                                	echo $choices;
-	                                ?>
-                            	</select>
-                        	</div>
-                		  </div>
-  	                      <div class="form-group">
-                        	<label class="col-lg-3 control-label">Add Assessment 2:</label>
-                        	<div class="col-lg-8">
-								<select class="form-control" name="assessment2" id="assessment2">
-                            		<option selected="selected" disabled="">-- SELECT --</option>
-                            		<option value="none">No 2nd Assessment</option>
-	                                <?php
-	                                	echo $choices;
-	                                ?>
-                            	</select>
-                        	</div>
-                		  </div>
-                		  <div class="form-group">
-                        	<label class="col-lg-3 control-label">Add Assessment 3:</label>
-                        	<div class="col-lg-8">
-								<select class="form-control" name="assessment3" id="assessment3">
-                            		<option selected="selected" disabled="">-- SELECT --</option>
-                            		<option value="none">No 3rd Assessment</option>
-	                                <?php
-	                                	echo $choices;
-	                                ?>
-                            	</select>
-                        	</div>
-                		  </div>
   				          <?php
 			                $query = "SELECT name, surname FROM users WHERE rank = 'lecturer'";
 			                $result = mysqli_query($conn, $query);
@@ -149,29 +135,7 @@
 			          	  <div class="form-group">
                         	<label class="col-lg-3 control-label">Lecturers Linked To Module:</label>
                         	<div class="col-lg-8">
-                            	<select class="form-control" name="linked[]" multiple>
-                            		<option>All Lecturers</option>
-	                                <?php
-	                                	echo $options;
-	                                ?>
-                            	</select>
-                        	</div>
-                		  </div>
-			          	  <div class="form-group">
-                        	<label class="col-lg-3 control-label">Lecturers Who Have Access To Students:</label>
-                        	<div class="col-lg-8">
-                            	<select class="form-control" name="lecturers[]" multiple>
-                            		<option>All Lecturers</option>
-	                                <?php
-	                                	echo $options;
-	                                ?>
-                            	</select>
-                        	</div>
-                		  </div>
-	                      <div class="form-group">
-                        	<label class="col-lg-3 control-label">Lecturers Who Can Mark This Module:</label>
-                        	<div class="col-lg-8">
-                            	<select class="form-control" name="markers[]" multiple>
+                            	<select class="form-control" name="linked[]" multiple required>
                             		<option>All Lecturers</option>
 	                                <?php
 	                                	echo $options;
@@ -183,10 +147,9 @@
 				            <label class="col-lg-3 control-label">Engagement points:</label>
 				            <div class="col-lg-8"> 
 						      	<div class="input-group control-group after-add-more">
-								   <input type="text" name="addmore[]" class="form-control" placeholder="Add Engagement Point">
-									  <div class="input-group-btn"> 
-										<button class="btn btn-success add-more" type="button"><i class="glyphicon glyphicon-plus"></i> Add</button>
-									  </div>
+								  <div class="input-group-btn"> 
+									<button class="btn btn-success add-more" type="button"><i class="glyphicon glyphicon-plus"></i> Add</button>
+								  </div>
 							  	</div>
 						        <div class="copy-fields hide">
 						          <div class="control-group input-group" style="margin-top:10px">
@@ -218,7 +181,7 @@
 	<script src="../js/bootstrap.min.js"></script>
 	<script>
 		function goBack() {
-			window.location.href = 'view-modules.php';
+			window.location.href = '../home/adminHome.php';
 		}
 	</script>
 </body>
@@ -278,53 +241,48 @@
     });
 </script>
 
+<script type="text/javascript">
+	$(function() {
+	    $('#alertUser').hide(); 
+	    $('#code').change(function() {
+	    	var amcode = <?php echo json_encode($mcode); ?>;
+	    	 if($('#code').val() == amcode) {
+		        $('#alertUser').show(); 
+		    } else {
+		        $('#alertUser').hide(); 
+		    } 
+	    });
+	});
+</script>
+
+<script type="text/javascript">
+	$(function() {
+	    $('#alertUser').hide(); 
+	    $('#name').change(function() {
+	    	var amname = <?php echo json_encode($mname); ?>;
+			if($('#name').val() == amname) {
+		        $('#warnUser').show(); 
+		    } else {
+		        $('#warnUser').hide(); 
+		    } 
+	    });
+	});	
+</script>
+
 <?php 
 	if(isset($_POST['submit'])) {
+		$lid = mysqli_insert_id($conn);
 		$id = mysqli_real_escape_string($conn, $_REQUEST['code']);
 		$mname = mysqli_real_escape_string($conn, $_REQUEST['name']);
 		$mlevel = mysqli_real_escape_string($conn, $_REQUEST['level']);
 		$mleader = mysqli_real_escape_string($conn, $_REQUEST['leader']);
 		$mdesc = mysqli_real_escape_string($conn, $_REQUEST['description']);
-		// $mlinked = mysqli_real_escape_string($conn, $_REQUEST['linked']);
-		$massess1 = mysqli_real_escape_string($conn, $_REQUEST['assessment1']);
-		$massess2 = mysqli_real_escape_string($conn, $_REQUEST['assessment2']);
-		$massess3 = mysqli_real_escape_string($conn, $_REQUEST['assessment3']);
 
-		foreach ($_POST['lecturers'] as $mlecturers) {
-			foreach ($_POST['markers'] as $mmarkers) {
-				foreach ($_POST['addmore'] as $mpoints) {
-					foreach ($_POST['linked'] as $mlinked) {
-						$sql = "SELECT assessment_code FROM assessment WHERE name = '$massess1'";
-						$res = mysqli_query($conn, $sql); // SAVES 'sql' QUERY RESULT
-						$test = mysqli_fetch_array($res); // FETCHES THE DATA FROM THAT RESULT
+		foreach ($_POST['linked'] as $mlecturers) {
+			foreach ($_POST['addmore'] as $mpoints) {
+				$query = "INSERT INTO module (id, module_code, module_name, module_leader, description, level, assessment1, assessment2, assessment3, lecturers_linked, engagement_points) VALUES ('" . $lid . "', '" . $id . "', '" . $mname . "', '" . $mleader . "', '" . $mdesc . "', '" . $mlevel . "', ' ', ' ', ' ', '" . $mlecturers . "', '" . $mpoints . "')";
 
-						$assess1 = $test['assessment_code']; // SAVES THE ARRAY AS A STRING
-
-						if ($massess2 == 'none' || $massess3 == 'none') {
-							$query = "INSERT INTO module (module_code, module_name, module_leader, description, level, assessment1, assessment2, assessment3, lecturers_linked, access_students, markers, marking_scheme, engagement_points) VALUES ('" . $id . "', '" . $mname . "', '" . $mleader . "', '" . $mdesc . "', '" . $mlevel . "', '" . $assess1 . "', 'No 2nd Assessment', 'No 3rd Assessment', '" . $mlinked . "', '". $mlecturers . "', '" . $mmarkers . "', '" . "' '" . "', '" . $mpoints . "')";
-
-							$result = mysqli_query($conn, $query) or die(mysqli_error($conn));
-						}
-
-						else {
-							$sql1 = "SELECT assessment_code FROM assessment WHERE name = '$massess2'";
-							$res1 = mysqli_query($conn, $sql1); // SAVES 'sql' QUERY RESULT
-							$test1 = mysqli_fetch_array($res1); // FETCHES THE DATA FROM THAT RESULT
-
-							$assess2 = $test1['assessment_code']; // SAVES THE ARRAY AS A STRING
-
-							$sql2 = "SELECT assessment_code FROM assessment WHERE name = '$massess3'";
-							$res2 = mysqli_query($conn, $sql2); // SAVES 'sql' QUERY RESULT
-							$test2 = mysqli_fetch_array($res2); // FETCHES THE DATA FROM THAT RESULT
-
-							$assess3 = $test2['assessment_code']; // SAVES THE ARRAY AS A STRING
-
-							$query = "INSERT INTO module (module_code, module_name, module_leader, description, level, assessment1, assessment2, assessment3, lecturers_linked, access_students, markers, marking_scheme, engagement_points) VALUES ('" . $id . "', '" . $mname . "', '" . $mleader . "', '" . $mdesc . "', '" . $mlevel . "', '" . $assess1 . "', '" . $assess2 . "','" . $assess3 . "', '" . $mlinked . "', '". $mlecturers . "', '" . $mmarkers . "', '" . "' '" . "', '" . $mpoints . "')";
-
-							$result = mysqli_query($conn, $query) or die(mysqli_error($conn));
-						}
-					}
-				}
+				$result = mysqli_query($conn, $query) or die(mysqli_error($conn));
 			}
 		}
 		mysqli_close($conn);

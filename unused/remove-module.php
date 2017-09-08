@@ -2,8 +2,7 @@
 <html>
 	<?php 
 		include "../includes/header.php";
-		include "../includes/admin-navbar.php";
-		include "../db_handler.php";
+		include "../includes/lecturer-navbar.php";
 	?>
 <head>
 	<title></title>
@@ -11,17 +10,23 @@
 <body>
 	<?php 
 	if (isset($_GET['id'])) {
+        $conn = mysqli_connect("localhost","root","","project");
+		if (mysqli_connect_errno()) {
+		  echo "Failed to connect to MySQL: " . mysqli_connect_error();
+		}
+
 		$user = mysqli_real_escape_string($conn, $_GET['id']);
 
-		$sql = "SELECT * FROM users WHERE username = '$user'"; 
+		$sql = "SELECT * FROM module WHERE module_code = '$user'"; 
 		$result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
 	
         while($row = mysqli_fetch_array($result)) { 
-        	$name = $row['name'];
-        	$sname = $row['surname'];
-        	$email = $row['email'];
-        	$user = $row['username'];
-        	$pass = $row['password'];
+        	$mcode = $row['module_code'];
+        	$mname = $row['module_name'];
+        	$mleader = $row['module_leader'];
+        	$desc = $row['description'];
+        	$as1 = $row['assessment1'];
+        	$as2 = $row['assessment2'];
 		}
 	}
 	?>
@@ -29,10 +34,9 @@
 		<div id="page-wrapper">
 			<div class="container-fluid">
 				<div class="container">
-				    <h1>Remove Users</h1>
+				    <h1>Remove Module</h1>
 				  	<hr>
 					<div class="row">
-				      <!-- edit form column -->
 				      <div class="col-md-9 personal-info">
 				        <div class="alert alert-info alert-dismissable">
 				          <a class="panel-close close" data-dismiss="alert">×</a> 
@@ -42,33 +46,21 @@
 				        
 				        <form class="form-horizontal" role="form" method="post">
 				          <div class="form-group">
-				            <label class="col-lg-3 control-label">First name:</label>
+				            <label class="col-lg-3 control-label">Module Code:</label>
 				            <div class="col-lg-8">
-				              <input class="form-control" type="text" value="<?php if (isset($_GET['id'])) { print $name; }?>" readonly>
+				              <input class="form-control" type="text" value="<?php if (isset($_GET['id'])) { print $mcode; }?>" readonly>
 				            </div>
 				          </div>
 				          <div class="form-group">
-				            <label class="col-lg-3 control-label">Surname:</label>
+				            <label class="col-lg-3 control-label">Module Name:</label>
 				            <div class="col-lg-8">
-				              <input class="form-control" type="text" value="<?php if (isset($_GET['id'])) { print $sname; }?>" readonly>
+				              <input class="form-control" type="text" value="<?php if (isset($_GET['id'])) { print $mname; }?>" readonly>
 				            </div>
 				          </div>
 				          <div class="form-group">
-				            <label class="col-lg-3 control-label">Email:</label>
+				            <label class="col-lg-3 control-label">Module Leader:</label>
 				            <div class="col-lg-8">
-				              <input class="form-control" type="email" value="<?php if (isset($_GET['id'])) { print $email; }?>" readonly>
-				            </div>
-				          </div>
-				          <div class="form-group">
-				            <label class="col-md-3 control-label">Username:</label>
-				            <div class="col-md-8">
-				              <input class="form-control" type="text" value="<?php if (isset($_GET['id'])) { print $user; }?>" readonly>
-				            </div>
-				          </div>
-				          <div class="form-group">
-				            <label class="col-md-3 control-label">Password:</label>
-				            <div class="col-md-8">
-				              <input class="form-control" type="password" value="<?php if (isset($_GET['id'])) { print $pass; }?>" readonly>
+				              <input class="form-control" type="text" value="<?php if (isset($_GET['id'])) { print $mleader; }?>" readonly>
 				            </div>
 				          </div>
 				          <div class="form-group">
@@ -91,7 +83,7 @@
 	<script src="../js/bootstrap.min.js"></script>
 	<script>
 		function goBack() {
-			window.location = 'view-users.php';
+			window.location = '../home/adminHome.php';
 		}
 	</script>
 </body>
@@ -106,9 +98,9 @@
 
 	if(isset($_POST['submit'])) { 
 		if (isset($_GET['id'])) {
-			$user = mysqli_real_escape_string($conn, $_GET['id']);
+			$module = mysqli_real_escape_string($conn, $_GET['id']);
 
-			$query = "DELETE FROM users WHERE username = '$user'";
+			$query = "DELETE FROM module WHERE module_code = '$module'";
 			$result= mysqli_query($conn, $query) or die(mysqli_error());
 		}
 

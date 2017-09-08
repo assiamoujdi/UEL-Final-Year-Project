@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 21, 2017 at 09:12 AM
+-- Generation Time: Sep 07, 2017 at 05:25 PM
 -- Server version: 5.7.14
 -- PHP Version: 5.6.25
 
@@ -27,26 +27,29 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `assessment` (
-  `assessment_code` varchar(9) NOT NULL,
+  `assessment_code` int(9) NOT NULL,
+  `module_code` varchar(15) NOT NULL,
   `name` varchar(250) NOT NULL,
   `number_markers` varchar(9) NOT NULL,
   `marking_scheme` varchar(9) NOT NULL,
   `weighs` varchar(5) NOT NULL,
   `description` varchar(255) NOT NULL,
+  `deadline` varchar(15) NOT NULL,
   `markers` varchar(250) NOT NULL,
   `sub_assessment` varchar(250) NOT NULL,
   `sub_assessment_description` varchar(250) NOT NULL,
   `sub_assessment_weight` varchar(250) NOT NULL,
-  `sub_assessment_marking_scheme` varchar(25) NOT NULL
+  `sub_assessment_marking_scheme` varchar(25) NOT NULL,
+  `sub_assessment_deadline` varchar(15) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `assessment`
 --
 
-INSERT INTO `assessment` (`assessment_code`, `name`, `number_markers`, `marking_scheme`, `weighs`, `description`, `markers`, `sub_assessment`, `sub_assessment_description`, `sub_assessment_weight`, `sub_assessment_marking_scheme`) VALUES
-('a1', 'coursework', '2', 'yes', '50%', 'group work', 'All Lecturers', 'report ', 'may', '50', 'No (Single Marking)'),
-('a1', 'coursework', '2', 'yes', '50%', 'group work', 'All Lecturers', 'presentation', 'january and may', '50', 'Yes');
+INSERT INTO `assessment` (`assessment_code`, `module_code`, `name`, `number_markers`, `marking_scheme`, `weighs`, `description`, `deadline`, `markers`, `sub_assessment`, `sub_assessment_description`, `sub_assessment_weight`, `sub_assessment_marking_scheme`, `sub_assessment_deadline`) VALUES
+(22, 'CN5103', 'lab work', '2', 'yes', '25%', 'weekly tutorials', '2017-09-03', 'All Lecturers', ' ', ' ', ' ', ' ', ' '),
+(18, 'CN5103', 'exam', '2', 'no', '75%', 'two exams', '2017-09-03', 'All Lecturers', 'january exam', 'january', '50%', '', '2017-09-03');
 
 -- --------------------------------------------------------
 
@@ -67,7 +70,9 @@ CREATE TABLE `lecturers` (
 --
 
 INSERT INTO `lecturers` (`id`, `lecturer_id`, `student_id`, `module_code`, `module_name`) VALUES
-(1, 's1', 'u1407170', 'CN5101', 'Database');
+(1, 's1', 'u1407170', 'CN5101', 'Database'),
+(7, 's', 'u1309254', 'CN5103', 'Operating Systems'),
+(8, 's', 'u1407170', 'CN5103', 'Operating Systems');
 
 -- --------------------------------------------------------
 
@@ -80,23 +85,47 @@ CREATE TABLE `marking_scheme` (
   `module_code` varchar(9) NOT NULL,
   `module_name` varchar(255) NOT NULL,
   `assessment_code` varchar(9) NOT NULL,
-  `total_marks` int(9) NOT NULL,
-  `area_name` varchar(255) NOT NULL,
-  `questions` varchar(255) NOT NULL,
-  `marks_avaliable` varchar(9) NOT NULL
+  `criteria` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `percentage` int(9) NOT NULL,
+  `range_type` varchar(50) NOT NULL,
+  `marks_range` varchar(15) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `marking_scheme`
 --
 
-INSERT INTO `marking_scheme` (`id`, `module_code`, `module_name`, `assessment_code`, `total_marks`, `area_name`, `questions`, `marks_avaliable`) VALUES
-(17, 'CN5102', 'Software', 'a1', 100, 'presentation', 'all members showed up', '2'),
-(16, 'CN5102', 'Software', 'a1', 100, 'plan', 'how did you separate work evenly between members?', '5'),
-(18, 'CN5102', 'Software', 'a1', 100, 'presentation', 'all members contributed ', '5'),
-(19, 'CN5102', 'Software', 'a1', 100, 'plan', 'how did you separate work evenly between members?', '5'),
-(20, 'CN5102', 'Software', 'a1', 100, 'presentation', 'all members showed up', '2'),
-(21, 'CN5102', 'Software', 'a1', 100, 'presentation', 'all members contributed ', '5');
+INSERT INTO `marking_scheme` (`id`, `module_code`, `module_name`, `assessment_code`, `criteria`, `description`, `percentage`, `range_type`, `marks_range`) VALUES
+(26, 'CN5103', 'Operating Systems', '22', 'Project Plan and Proposed Solution', 'Relation being theory and practical work produced', 40, 'Yes', '5'),
+(25, 'CN5103', 'Operating Systems', '22', 'Problem Definition and Literature Review', 'Understanding of topic area', 20, 'Yes', '3'),
+(24, 'CN5103', 'Operating Systems', '22', 'Problem Definition and Literature Review', 'How well does the report identify the problem being invested?', 40, 'No', '3');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `marking_scheme_marks`
+--
+
+CREATE TABLE `marking_scheme_marks` (
+  `id` int(9) NOT NULL,
+  `student_id` varchar(10) NOT NULL,
+  `module_code` varchar(10) NOT NULL,
+  `assessment_code` varchar(10) NOT NULL,
+  `marker` varchar(250) NOT NULL,
+  `mark_given` int(5) NOT NULL,
+  `total_marks` int(5) NOT NULL,
+  `feedback` varchar(255) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `marking_scheme_marks`
+--
+
+INSERT INTO `marking_scheme_marks` (`id`, `student_id`, `module_code`, `assessment_code`, `marker`, `mark_given`, `total_marks`, `feedback`) VALUES
+(39, 'u1407170', 'CN5103', '22', 's1', 1, 6, 'Good effort'),
+(40, 'u1407170', 'CN5103', '22', 's1', 2, 6, 'Good effort'),
+(41, 'u1407170', 'CN5103', '22', 's1', 3, 6, 'Good effort');
 
 -- --------------------------------------------------------
 
@@ -123,8 +152,7 @@ CREATE TABLE `marks` (
 --
 
 INSERT INTO `marks` (`mark_id`, `module_code`, `assessment_code`, `sub_assessment`, `student_id`, `mark1`, `mark2`, `mark3`, `final_mark`, `engagement`, `feedback`) VALUES
-(50, 'CN5101', 'a1', 'report ', 'u1407170', 47, 0, 0, 47, 'Good', 'All points met and well explained.'),
-(57, 'CN5102', 'a1', 'report ', 'u1309254', 50, 45, 0, 95, '', '');
+(66, 'CN5103', '18', 'exam', 'u1407170', 45, 0, 0, 45, 'Ok', 'Good attempt');
 
 -- --------------------------------------------------------
 
@@ -133,6 +161,7 @@ INSERT INTO `marks` (`mark_id`, `module_code`, `assessment_code`, `sub_assessmen
 --
 
 CREATE TABLE `module` (
+  `id` int(9) NOT NULL,
   `module_code` varchar(7) NOT NULL,
   `module_name` varchar(50) NOT NULL,
   `module_leader` varchar(50) NOT NULL,
@@ -142,9 +171,6 @@ CREATE TABLE `module` (
   `assessment2` varchar(50) NOT NULL,
   `assessment3` varchar(50) NOT NULL,
   `lecturers_linked` varchar(250) NOT NULL,
-  `access_students` varchar(250) NOT NULL,
-  `markers` varchar(250) NOT NULL,
-  `marking_scheme` varchar(9) NOT NULL,
   `engagement_points` varchar(500) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -152,10 +178,11 @@ CREATE TABLE `module` (
 -- Dumping data for table `module`
 --
 
-INSERT INTO `module` (`module_code`, `module_name`, `module_leader`, `description`, `level`, `assessment1`, `assessment2`, `assessment3`, `lecturers_linked`, `access_students`, `markers`, `marking_scheme`, `engagement_points`) VALUES
-('CN5102', 'Software', 'Syed Islam', 'Advanced software module to help students improve java skills further before final year.', '4', '', '', '', '', '', '', '', ''),
-('CN5103', 'Operating Systems', 'Usman Naeem', '', '5', '', '', '', '', '', '', '', ''),
-('CN5101', 'Database', 'Arish', 'Database SQL tutorials', '5', 'a1', '', '', '', '', '', '', '');
+INSERT INTO `module` (`id`, `module_code`, `module_name`, `module_leader`, `description`, `level`, `assessment1`, `assessment2`, `assessment3`, `lecturers_linked`, `engagement_points`) VALUES
+(1, 'CN5102', 'Software', 'a1', 'Advanced software module to help students improve java skills further before final year.', '4', '', '', '', '', ''),
+(2, 'CN5103', 'Operating Systems', 's1', 'Scripting', '5', '18', '22', '', 'All Lecturers', ''),
+(3, 'CN5101', 'Database', 's1', 'Database SQL tutorials', '5', '22', '', '', '', ''),
+(15, 'CN5122', 'Data Comuncations', 's1', 'IP Addressing', '5', ' ', ' ', ' ', 'Supervisor', '');
 
 -- --------------------------------------------------------
 
@@ -171,27 +198,30 @@ CREATE TABLE `users` (
   `username` varchar(10) NOT NULL,
   `password` varchar(10) NOT NULL,
   `rank` varchar(15) NOT NULL,
-  `level` int(1) NOT NULL,
-  `supervisor` varchar(150) NOT NULL,
-  `second_supervisor` varchar(150) NOT NULL,
-  `modules` varchar(250) NOT NULL
+  `level` int(1) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `surname`, `email`, `username`, `password`, `rank`, `level`, `supervisor`, `second_supervisor`, `modules`) VALUES
-('u1309254', 'Student', 'Example', 'student@example.com', 'student', 'pass', 'Student', 4, 'Supervisor Example', 'Not assigned/No one', ''),
-('a', 'Admin', 'Example', 'admin@example.co.uk', 'admin', 'Pass', 'Admin', 0, '', '', ''),
-('s', 'Supervisor', 'Example', 'super@example.com', 'super', 'Pass', 'Lecturer', 0, '', '', 'Software, Operating Systems'),
-('s1', 'usman', 'naeem', 'example@test.co.uk', 'usman', 'pass', 'lecturer', 0, '', '', 'Software'),
-('a1', 'syed', 'islam', 'example@test.com', 'syed', 'pass', 'admin', 0, '', '', ''),
-('u1407170', 'assia', 'moujdi', 'test@example.com', 'assia', 'pass', 'student', 5, 'usman naeem', 'Supervisor Example', '');
+INSERT INTO `users` (`id`, `name`, `surname`, `email`, `username`, `password`, `rank`, `level`) VALUES
+('u1309254', 'Student', 'Example', 'student@example.com', 'student', 'pass', 'Student', 5),
+('a', 'Admin', 'Example', 'admin@example.co.uk', 'admin', 'Pass', 'Admin', 0),
+('s', 'Supervisor', 'Example', 'super@example.com', 'super', 'Pass', 'Lecturer', 0),
+('s1', 'usman', 'naeem', 'example@test.co.uk', 'usman', 'pass', 'lecturer', 0),
+('a1', 'syed', 'islam', 'example@test.com', 'syed', 'pass', 'admin', 0),
+('u1407170', 'assia', 'moujdi', 'test@example.com', 'assia', 'pass', 'student', 5);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `assessment`
+--
+ALTER TABLE `assessment`
+  ADD PRIMARY KEY (`assessment_code`);
 
 --
 -- Indexes for table `lecturers`
@@ -206,10 +236,22 @@ ALTER TABLE `marking_scheme`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `marking_scheme_marks`
+--
+ALTER TABLE `marking_scheme_marks`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `marks`
 --
 ALTER TABLE `marks`
   ADD PRIMARY KEY (`mark_id`);
+
+--
+-- Indexes for table `module`
+--
+ALTER TABLE `module`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `users`
@@ -222,20 +264,35 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `assessment`
+--
+ALTER TABLE `assessment`
+  MODIFY `assessment_code` int(9) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+--
 -- AUTO_INCREMENT for table `lecturers`
 --
 ALTER TABLE `lecturers`
-  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 --
 -- AUTO_INCREMENT for table `marking_scheme`
 --
 ALTER TABLE `marking_scheme`
-  MODIFY `id` int(9) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(9) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+--
+-- AUTO_INCREMENT for table `marking_scheme_marks`
+--
+ALTER TABLE `marking_scheme_marks`
+  MODIFY `id` int(9) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 --
 -- AUTO_INCREMENT for table `marks`
 --
 ALTER TABLE `marks`
-  MODIFY `mark_id` int(9) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `mark_id` int(9) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+--
+-- AUTO_INCREMENT for table `module`
+--
+ALTER TABLE `module`
+  MODIFY `id` int(9) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

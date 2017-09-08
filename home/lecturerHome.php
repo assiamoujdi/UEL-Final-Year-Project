@@ -19,22 +19,41 @@
 			<div class="wrapper">
 			<h1>Welcome
 			<?php 
-				if (isset($_GET['id'])) {
-					$user = mysqli_real_escape_string($conn, $_GET['id']);
-					$sql = "SELECT * FROM users WHERE username = '$user'"; 
-					$result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
-				
-			        while($row = mysqli_fetch_array($result)) { 
-			        	$name = $row['name'];
-						echo " " . $name . " (Lecturer)";
-					}
+				$user = $_SESSION['id'];
+				$sql = "SELECT * FROM users WHERE username = '$user'"; 
+				$result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
+			
+		        while($row = mysqli_fetch_array($result)) { 
+		        	$name = $row['name'];
+					echo " " . $name . " (Lecturer)";
 				}
 			?>
 		</h1>
 		<hr>
 			<div>
 				<button type="button" class="btn btn-success"><a href="../admin/view-modules.php">View Modules</a></button>
-				<button type="button" class="btn btn-danger"><a href="../admin/add-module.php">Add Module</a></button>
+				<?php 
+					$leader = $_SESSION['id'];
+
+                     $select = "SELECT id FROM users WHERE username = '$leader'";
+                     $res = mysqli_query($conn, $select);
+
+                     while($getting = mysqli_fetch_array($res))
+                     {
+                        $leaderid = $getting['id'];
+                     }
+
+                     $query = "
+                          SELECT DISTINCT module_code, module_name, description, assessment1, assessment2, assessment3 FROM module WHERE module_leader = '$leaderid' ORDER BY module_code asc
+                         ";
+
+                    $result = mysqli_query($conn, $query);
+                    if(mysqli_num_rows($result) > 0) {
+            	?>
+					<button type="button" class="btn btn-danger"><a href="../admin/manage-module.php">Manage Modules</a></button>
+				<?php
+                    }
+				?>
 				<button type="button" class="btn btn-primary"><a href="../admin/view-assessments.php">View Assessments</a></button>
 				<button type="button" class="btn btn-warning"><a href="../admin/view-marking-schemes.php">View Marking Schemes</a></button>
 				<button type="button" class="btn btn-info"><a href="../supervisor/view-students.php">View Students</a></button>
@@ -111,7 +130,6 @@
 			</div>
 		</div>
 	</body>
-		<?php include "../includes/footer.php" ?>
 	</div>
 </html>
 

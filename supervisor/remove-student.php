@@ -1,8 +1,10 @@
+<!-- MAKE A POP UP INSTEAD OF FORM -->
+
 <!DOCTYPE html>
 <html>
 	<?php 
 		include "../includes/header.php";
-		include "../includes/admin-navbar.php";
+		include "../includes/navbar.php";
 		include "../db_handler.php";
 	?>
 <head>
@@ -29,10 +31,9 @@
 		<div id="page-wrapper">
 			<div class="container-fluid">
 				<div class="container">
-				    <h1>Remove Users</h1>
+				    <h1>Remove Students</h1>
 				  	<hr>
 					<div class="row">
-				      <!-- edit form column -->
 				      <div class="col-md-9 personal-info">
 				        <div class="alert alert-info alert-dismissable">
 				          <a class="panel-close close" data-dismiss="alert">×</a> 
@@ -74,7 +75,7 @@
 				          <div class="form-group">
 				            <label class="col-md-3 control-label"></label>
 				            <div class="col-md-8">
-				              <input type="submit" name="submit" class="btn btn-primary" value="Delete">
+				              <input type="submit" name="submit" class="btn btn-primary" value="Delete" readonly>
 				              <span></span>
 				              <input type="reset" class="btn btn-default" value="Cancel" onclick="goBack()">
 				            </div>
@@ -91,7 +92,7 @@
 	<script src="../js/bootstrap.min.js"></script>
 	<script>
 		function goBack() {
-			window.location = 'view-users.php';
+			window.location = 'students-view.php';
 		}
 	</script>
 </body>
@@ -112,6 +113,6 @@
 			$result= mysqli_query($conn, $query) or die(mysqli_error());
 		}
 
-		echo "<script>goBack();</script>";
+		include "../back.php";
 	}
 ?>
