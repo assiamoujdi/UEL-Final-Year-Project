@@ -32,15 +32,29 @@
 			?>
 		</h1>
 		<hr>
-		<div class="col-md-6">
-			<h3>Manegment</h3>
-			<button type="button" class="btn btn-success"><a href="../admin/view-users.php">View Users</a></button>
-			<button type="button" class="btn btn-primary"><a href="../admin/add-user.php">Add User</a></button>
-			<button type="button" class="btn btn-danger"><a href="../admin/add-module.php">Add Module</a></button>
-		</div>
+			<div class="col-md-6">
+				<h3>Module Manegment</h3>
+				<button type="button" class="btn btn-primary"><a href="../admin/admin-view-modules.php">View Modules</a></button>
+				<button type="button" class="btn btn-warning"><a href="../admin/add-module.php">Add Module</a></button>
+			</div>
+			<div class="col-md-6">
+				<h3>Assessment Management</h3>
+				<button type="button" class="btn btn-primary"><a href="../admin/view-assessments.php">View Assessments</a></button>
+				<button type="button" class="btn btn-warning"><a href="../admin/view-marking-schemes.php">View Marking Schemes</a></button>
+				<button type="button" class="btn btn-info"><a href="../admin/admin-view-modules.php">Add Assessment</a></button>
+				<br>
+				<br>
+			</div>
+
+			<div class="col-md-6">
+				<h3>User Management</h3>
+				<button type="button" class="btn btn-primary"><a href="../admin/view-users.php">View Users</a></button>
+				<button type="button" class="btn btn-warning"><a href="../admin/view-students.php">View Students</a></button>
+				<button type="button" class="btn btn-info"><a href="../admin/view-lecturers.php">View Lecturers</a></button>
+				<button type="button" class="btn btn-danger"><a href="../admin/add-user.php">Add User</a></button>
+			</div>	
 		</div>
 	</body>
-		<?php include "../includes/footer.php" ?>
 	</div>
 </html>
 

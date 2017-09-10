@@ -1,8 +1,5 @@
-<!-- MAKE SURE SELECT FIELDS ARE REQUIRED BEFORE SAVING TO THE DATABASE -->
-
 <!DOCTYPE html>
 <html>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -12,23 +9,9 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/js/bootstrap-select.min.js"></script>
 
 	<?php 
-		include "../includes/admin-navbar.php";
+		include "../includes/lecturer-navbar.php";
 		include "../includes/header.php";
 		include "../db_handler.php";
-	?>
-	<?php 
-		if (isset($_GET['id'])) {
-			$user = mysqli_real_escape_string($conn, $_GET['id']);
-
-			$sql = "SELECT * FROM users WHERE username = '$user'"; 
-			$result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
-		
-	        while($row = mysqli_fetch_array($result)) { 
-	        	$name = $row['name'];
-	        	$sname = $row['surname'];
-	        	$level = $row['level'];
-			}
-		}
 	?>
 <head>
 	<title></title>
@@ -38,65 +21,53 @@
 		<div id="page-wrapper">
 			<div class="container-fluid">
 				<div class="container">
-				    <h1>Add Mark For
-					    <?php 
-			                if (isset($_GET['id'])) {
-			                    $user = mysqli_real_escape_string($conn, $_GET['id']);
-			                    $sfull = "SELECT name, surname FROM users WHERE username = '$user' ";
-
-	                    		$result = mysqli_query($conn, $sfull) or die(mysqli_error($conn));
-		
-						        while($row = mysqli_fetch_array($result)) { 
-						        	$name = $row['name'];
-						        	$sname = $row['surname'];
-								}
-
-			                    echo " " . $name . " " . $sname . "";
-			                }
-			            ?></h1>
+				    <h1>Add Single Mark</h1>
 				  	<hr>
 					<div class="row">
 				      <div class="col-md-9 personal-info">
 				        <h3>Module Mark</h3>
 				        <form class="form-horizontal" role="form" method="post">
-                      	  <div class="form-group">
-	                        <label for="studyLevel" class="col-md-3 control-label">Study Level:</label>
-		                        <div class="col-md-8">
-		                        	<input class="form-control" type="text" id="study" name="study" value="<?php if (isset($_GET['id'])) { print $level; }?>" readonly>
-		                        </div>
-	                    	</div>
                       	    <div class="form-group">
-	                        	<label for="ModuleDetails" class="col-md-3 control-label">Module Code & Name:</label>
+	                        	<label for="ModuleDetails" class="col-md-3 control-label">Student ID & Name:</label>
 			                        <div class="col-md-8">
-										<select class="form-group form-control" data-show-subtext="true" data-live-search="true" id="module" name="module" style="margin-left: -1px;" required>
-											<option selected="selected" disabled>-- SELECT MODULE --</option>
+										<select class="form-group form-control" data-show-subtext="true" data-live-search="true" id="student" name="student" style="margin-left: -1px;" required>
+											<option selected="selected" disabled>-- SELECT STUDENT --</option>
 											<?php 
-												$query = "SELECT module_code, module_name FROM module WHERE level = '$level'";
+												$assess = mysqli_real_escape_string($conn, $_GET['id']);
+												$sql = "SELECT module_code FROM assessment WHERE assessment_code = '$assess'";
+												$res = mysqli_query($conn, $sql);
+
+												while($row1 = mysqli_fetch_array($res)) {
+													$moduleC = $row1['module_code'];
+												}
+
+												$sql1 = "SELECT level FROM module WHERE module_code = '$moduleC'";
+												$res1 = mysqli_query($conn, $sql1);
+
+												while($row2 = mysqli_fetch_array($res1)) {
+													$level = $row2['level'];
+												}
+
+												$query = "SELECT id, name, surname FROM users WHERE level = '$level' AND rank = 'student'";
 									            $result = mysqli_query($conn, $query) or die(mysqli_error($conn));
 									            while ($row = mysqli_fetch_array($result)) {
-									                echo "<option value='$row[0]'>$row[0] - $row[1]</option>";
+									                echo "<option value='$row[0]'>$row[0] - $row[1] $row[2]</option>";
 									            }
 											?>        
 			                            </select>
 			                        </div>
 	                    	</div>
-				          <div class="form-group">
-				            <label class="col-lg-3 control-label">Student Name:</label>
-				            <div class="col-lg-8">
-				              <input class="form-control" type="text" id="name" name="name" value="<?php if (isset($_GET['id'])) { print $name . ' ' .  $sname; }?>" readonly>
-				            </div>
-				          </div>
                   	      <div class="form-group">
 	                        <label for="AssessmentChosen" class="col-md-3 control-label">Assessment:</label>
 		                        <div class="col-md-8">
 		                            <select name="assessment" id="assessment" class="form-control" required>
 			                            <option selected="selected" selected disabled>-- SELECT ASSESSMENT -- </option>
 			                                <?php 
-												$statement = "SELECT * FROM assessment";
+												$statement = "SELECT name, sub_assessment FROM assessment WHERE assessment_code = '$assess'";
 
 									            $result = mysqli_query($conn, $statement) or die(mysqli_error($conn));
 									            while ($row = mysqli_fetch_array($result)) {
-									                echo "<option value='$row[0]'>$row[2] ($row[5]) - Sub Assessment: $row[9]</option>";
+									                echo "<option value='$row[0]'>Assessment: $row[0] - Sub Assessment: $row[1]</option>";
 									            }
 											?>
 		                            </select>
@@ -162,7 +133,7 @@
 	<script src="../js/bootstrap.min.js"></script>
 	<script>
 		function goBack() {
-			window.location.href = '../home/adminHome.php';
+			window.location.href = '../home/lecturerHome.php';
 		}
 	</script>
 </body>
@@ -184,26 +155,15 @@
 <?php 
 	if(isset($_POST['submit'])) {
 		$id = mysqli_insert_id($conn);
-		$module = mysqli_real_escape_string($conn, $_REQUEST['module']);
+		$student = mysqli_real_escape_string($conn, $_REQUEST['student']);
 		$engagement = mysqli_real_escape_string($conn, $_REQUEST['engagement']);
 		$comments = mysqli_real_escape_string($conn, $_REQUEST['comment']);
 		$markGiven = mysqli_real_escape_string($conn, $_REQUEST['mark']);
 		$suba = mysqli_real_escape_string($conn, $_REQUEST['assessment']);
 
-		$user = mysqli_real_escape_string($conn, $_GET['id']);	
-		$sql = "SELECT id FROM users WHERE username = '$user'"; 
+		// assess - Assessment code
 
-		$res = mysqli_query($conn, $sql); // SAVES 'sql' QUERY RESULT
-		$test = mysqli_fetch_array($res); // FETCHES THE DATA FROM THAT RESULT
-
-		$student = $test['id']; // SAVES THE ARRAY AS A STRING
-
-		$aquery = "SELECT assessment_code FROM assessment WHERE sub_assessment = '$suba'"; // FINDS THE ASSESSMENT CODE BASED ON THE ASSESSMENT CHOSEN IN THE SELECTION LIST ABOVE
-
-		$testing = mysqli_query($conn, $aquery); // SAVES 'sql' QUERY RESULT
-		$atest = mysqli_fetch_array($testing); // FETCHES THE DATA FROM THAT RESULT
-
-		$acode = $atest['assessment_code']; // SAVES THE ARRAY AS A STRING
+		$module = $moduleC;
 		
 		$get = "SELECT mark1, mark2, mark3, final_mark, sub_assessment, feedback FROM marks WHERE student_id = '$student' AND module_code = '$module'";
 		$res = mysqli_query($conn, $get);
@@ -220,19 +180,19 @@
 		if ($subadb == $suba) {
 			if ($mark1 == 0) {
 				if ($engagement == '1') {
-				$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $acode . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Poor', '" . $comments . "')";
+				$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $assess . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Poor', '" . $comments . "')";
 				}
 
 				if ($engagement == '2') {
-					$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $acode . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Ok', '" . $comments . "')";
+					$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $assess . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Ok', '" . $comments . "')";
 				}
 
 				if ($engagement == '3') {
-					$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $acode . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Good', '" . $comments . "')";
+					$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $assess . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Good', '" . $comments . "')";
 				}
 
 				if ($engagement == '4') {
-					$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $acode . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Excellent', '" . $comments . "')";
+					$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $assess . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Excellent', '" . $comments . "')";
 				}
 			}
 
@@ -259,22 +219,22 @@
 
 		else if ($subadb != $suba) {
 			if ($engagement == '1') {
-				$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $acode . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Poor', '" . $comments . "')";
+				$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $assess . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Poor', '" . $comments . "')";
 			}
 
 			if ($engagement == '2') {
-				$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $acode . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Ok', '" . $comments . "')";
+				$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $assess . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Ok', '" . $comments . "')";
 			}
 
 			if ($engagement == '3') {
-				$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $acode . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Good', '" . $comments . "')";
+				$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $assess . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Good', '" . $comments . "')";
 			}
 
 			if ($engagement == '4') {
-				$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $acode . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Excellent', '" . $comments . "')";
+				$query = "INSERT INTO marks (mark_id, module_code, assessment_code, sub_assessment, student_id, mark1, mark2, mark3, final_mark, engagement, feedback) VALUES ('" . $id . "', '" . $module . "', '" . $assess . "', '" . $suba . "', '" . $student . "', '" . $markGiven . "', '0', '0', '" . $markGiven . "', 'Excellent', '" . $comments . "')";
 			}
-		}		
-
+		}
+		
 		$result = mysqli_query($conn, $query) or die(mysqli_error($conn));
 		mysqli_close($conn);
 		echo "<script>goBack();</script>";

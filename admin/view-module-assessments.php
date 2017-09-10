@@ -2,7 +2,7 @@
 <html>
   <?php 
     include "../includes/header.php";
-    include "../includes/lecturer-navbar.php";
+    include "../includes/admin-navbar.php";
     include "../db_handler.php";
   ?>
   <meta charset="utf-8">
@@ -52,17 +52,10 @@
                         <th><input type="text" class="form-control" placeholder="Sub Assessment" disabled></th>
                         <th><input type="text" class="form-control" placeholder="SA Weight" disabled></th>
                         <th><input type="text" class="form-control" placeholder="SA Deadline" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Mark Student" disabled></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                        $conn = mysqli_connect('localhost', 'root', '', 'project');
-
-                        if (!$conn) {
-                          die("Connection failed: ".mysqli_connect_err());
-                        }
-
                         $output = '';
                         if(isset($_POST["query"]))
                         {
@@ -95,10 +88,6 @@
                               <td>'.$row["sub_assessment"].'</td>
                               <td>'.$row["sub_assessment_weight"].'</td>
                               <td>'.$row["sub_assessment_deadline"].'</td>
-
-                                <td class="text-center">
-                                  <button type="button" class="btn btn-success"><a href="add-mark.php?id=' . $assessment . '">Mark Student</a></button>
-                                </td>
                               </tr>
                               </div>
                             ';

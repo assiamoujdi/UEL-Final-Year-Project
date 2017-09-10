@@ -1,8 +1,16 @@
+<!-- SUB ASSESSMENTS SAVE TWICE DUE TO THE IF STATEMENT AND ALSO HAS 1 WITHOUT SUB ASSESSMENTS BEING SAVED -->
+	<!-- LEAVE FOR NOW, TRY FIX LATER -->
+
+<!-- IF POSSIBLE - FIX DATE ISSUE ON SUB ASSESSMENTS -->
+	<!-- WHEN A NEW ROW IS ENTERED, CURRENT DATE IS NOT SET AS THE VALUE -->
+	<!-- WHEN A NEW ROW IS ENTERED, PREVIOUS DATES CAN STILL BE CHOSEN -->
+		<!-- LEAVE FOR NOW, TRY FIX LATER -->
+
 <!DOCTYPE html>
 <html>
 	<?php 
 		include "../includes/header.php";
-		include "../includes/admin-navbar.php";
+		include "../includes/lecturer-navbar.php";
     	include "../db_handler.php";
 	?>
 <head>
@@ -415,7 +423,7 @@
 	<script src="../js/bootstrap.min.js"></script>
 	<script>
 		function goBack() {
-			window.location.href = '../home/adminHome.php';
+			window.location.href = '../home/lecturerHome.php';
 		}
 	</script>
 </body>
@@ -630,7 +638,7 @@
 	function YNconfirm() { 
 	 if (window.confirm('Assessment Saved!'))
 	 {
-	   window.location.href = '../home/adminHome.php';
+	   window.location.href = '../home/lecturerHome.php';
 	 }
 	}
 </script>

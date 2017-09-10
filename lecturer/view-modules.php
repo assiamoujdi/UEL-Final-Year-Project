@@ -2,7 +2,7 @@
 <html>
   <?php 
     include "../includes/header.php";
-    include "../includes/admin-navbar.php";
+    include "../includes/lecturer-navbar.php";
     include "../db_handler.php";
   ?>
   <meta charset="utf-8">
@@ -63,8 +63,19 @@
                         }
                         else
                         {
+                         $leader = $_SESSION['id'];
+
+                         $select = "SELECT id, name FROM users WHERE username = '$leader'";
+                         $res = mysqli_query($conn, $select);
+
+                         while($getting = mysqli_fetch_array($res))
+                         {
+                            $leaderid = $getting['id'];
+                            $leadername = $getting['name'];
+                         }
+
                          $query = "
-                          SELECT DISTINCT module_code, module_name, module_leader, description, assessment1, assessment2, assessment3 FROM module
+                          SELECT DISTINCT module_code, module_name, module_leader, description, assessment1, assessment2, assessment3 FROM module WHERE lecturers_linked = '$leadername' OR lecturers_linked = 'All Lecturers' OR module_leader = '$leaderid'
                          ";
                         }
                         $result = mysqli_query($conn, $query);
@@ -130,6 +141,32 @@
                                 $output .= '
                                 <td>'.$row["description"].'</td>
                                 <td>'. $moduleSize .'%</td>
+                                <td class="text-center">
+                                <div class="btn-group">
+                                    <div class="btn-group">
+                                      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Options <span class="caret"></span>
+                                      </button>
+                                      <ul class="dropdown-menu" role="menu">
+                                        <li>
+                                          <a href="view-module-assessments?id=' . $mcode . '">Mark Student</a>
+                                        </li>
+                                        ';
+
+                                        $sql = "SELECT * FROM marking_scheme WHERE module_code = '$mcode'";
+                                        $res = mysqli_query($conn, $sql);
+
+                                        if(mysqli_num_rows($res) > 0) {
+                                          $output .= '
+                                            <li>
+                                              <a href="view-assessments-for-module.php?id=' . $mcode . '">Mark Student With Marking Scheme</a>
+                                            </li>';
+                                        }
+
+                                        $output .='
+                                      </ul>
+                                    </div>
+                                  </div>
+                                 </td>
                              </tr>';
                             }
 
@@ -150,7 +187,33 @@
                               $output .= '
                               <td>'.$row["description"].'</td>
                               <td>'.$moduleSize.'%</td>
-                              </tr>
+
+                                <td class="text-center">
+                                <div class="btn-group">
+                                    <div class="btn-group">
+                                      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Options <span class="caret"></span>
+                                      </button>
+                                      <ul class="dropdown-menu" role="menu">
+                                        <li>
+                                          <a href="view-module-assessments?id=' . $mcode . '">Mark Student</a>
+                                        </li>';
+
+                                        $sql = "SELECT * FROM marking_scheme WHERE module_code = '$mcode'";
+                                        $res = mysqli_query($conn, $query1);
+
+                                        if(mysqli_num_rows($res) > 0) {
+                                          $output .= '
+                                            <li>
+                                              <a href="view-assessments-for-module.php?id=' . $mcode . '">Mark Student With Marking Scheme</a>
+                                            </li>';
+                                        }
+                                        
+                                        $output .='
+                                      </ul>
+                                    </div>
+                                  </div>
+                                 </td>
+                                </tr>
                               </div>
                             ';
                          }

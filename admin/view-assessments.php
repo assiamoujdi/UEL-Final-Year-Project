@@ -2,7 +2,8 @@
 <html>
   <?php 
     include "../includes/header.php";
-    include "../includes/lecturer-navbar.php";
+    include "../includes/admin-navbar.php";
+    include "../db_handler.php";
   ?>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -45,12 +46,6 @@
                 </thead>
                 <tbody>
                     <?php
-                        $conn = mysqli_connect('localhost', 'root', '', 'project');
-
-                        if (!$conn) {
-                          die("Connection failed: ".mysqli_connect_err());
-                        }
-
                         $output = '';
                         if(isset($_POST["query"]))
                         {
@@ -167,7 +162,6 @@
 
 <?php 
    if(isset($_POST["export"])){
-     
       $result = "SELECT * FROM assessment";
       $row = mysqli_query($conn, $result) or die(mysqli_error($conn));
 

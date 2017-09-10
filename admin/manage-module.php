@@ -2,7 +2,7 @@
 <html>
   <?php 
     include "../includes/header.php";
-    include "../includes/lecturer-navbar.php";
+    include "../includes/admin-navbar.php";
     include "../db_handler.php";
   ?>
   <meta charset="utf-8">
@@ -49,12 +49,6 @@
                 </thead>
                 <tbody>
                     <?php
-                        $conn = mysqli_connect('localhost', 'root', '', 'project');
-
-                        if (!$conn) {
-                          die("Connection failed: ".mysqli_connect_err());
-                        }
-
                         $output = '';
                         if(isset($_POST["query"]))
                         {
@@ -135,28 +129,6 @@
                                 <td>'.$row["module_name"].'</td>
                                 <td>'.$row["description"].'</td>
                                 <td>'. $moduleSize .'%</td>
-                                <td class="text-center">
-                                <div class="btn-group">
-                                    <div class="btn-group">
-                                      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Options <span class="caret"></span>
-                                      </button>
-                                      <ul class="dropdown-menu" role="menu">
-                                        <li>
-                                          <a href="add-assessment.php?id=' . $module . '">Add Assessment</a>
-                                        </li>
-                                        <li>
-                                          <a href="view-assessments-marking-scheme.php?id=' . $module . '">Create Marking Scheme</a>
-                                        </li>
-                                        <li>
-                                          <a href="assign-students.php?id=' . $module . '">Assign Students To Lecturers</a>
-                                        </li>
-                                        <li>
-                                          <a href="view-marks.php?id=' . $module . '">View Student Marks</a>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
-                                 </td>
                              </tr>';
                             }
 
@@ -167,28 +139,6 @@
                               <td>'.$row["module_name"].'</td>
                               <td>'.$row["description"].'</td>
                               <td>'.$moduleSize.'%</td>
-                                <td class="text-center">
-                                <div class="btn-group">
-                                    <div class="btn-group">
-                                      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Options <span class="caret"></span>
-                                      </button>
-                                      <ul class="dropdown-menu" role="menu">
-                                        <li>
-                                          <a href="add-assessment.php?id=' . $module . '">Add Assessment</a>
-                                        </li>
-                                        <li>
-                                          <a href="view-assessments-marking-scheme.php?id=' . $module . '">Create Marking Scheme</a>
-                                        </li>
-                                        <li>
-                                          <a href="assign-students.php?id=' . $module . '">Assign Students To Lecturers</a>
-                                        </li>
-                                        <li>
-                                          <a href="view-marks.php?id=' . $module . '">View Student Marks</a>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
-                                 </td>
                                 </tr>
                               </div>
                             ';

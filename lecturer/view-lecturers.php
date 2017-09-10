@@ -2,7 +2,7 @@
 <html>
 	<?php 
 		include "../includes/header.php";
-		include "../includes/admin-navbar.php";
+		include "../includes/lecturer-navbar.php";
     include "../db_handler.php";
 	?>
   <meta charset="utf-8">

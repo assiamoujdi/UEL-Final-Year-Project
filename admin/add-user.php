@@ -3,8 +3,16 @@
 	<?php 
 		include "../includes/header.php";
 		include "../includes/admin-navbar.php";
+		include "../db_handler.php";
 	?>
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.2/css/bootstrap-slider.min.css">
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.2/bootstrap-slider.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
 	<title></title>
 </head>
 <body>
@@ -19,12 +27,6 @@
 				        <h3>Account Information</h3>
 				        
 				        <form class="form-horizontal" role="form" method="post">
-				          <div class="form-group">
-				            <label class="col-lg-3 control-label">ID:</label>
-				            <div class="col-lg-8">
-				              <input class="form-control" type="text" id="id" name="id" required>
-				            </div>
-				          </div>
 				          <div class="form-group">
 				            <label class="col-lg-3 control-label">First name:</label>
 				            <div class="col-lg-8">
@@ -41,12 +43,6 @@
 				            <label class="col-lg-3 control-label">Email:</label>
 				            <div class="col-lg-8">
 				              <input class="form-control" type="email" id="email" name="email" required>
-				            </div>
-				          </div>
-				          <div class="form-group">
-				            <label class="col-md-3 control-label">Username:</label>
-				            <div class="col-md-8">
-				              <input class="form-control" type="text" id="username" name="username" required>
 				            </div>
 				          </div>
 				          <div class="form-group">
@@ -121,19 +117,23 @@
 	});
 </script>
 
-<?php 
-	$conn = mysqli_connect("localhost","root","","project");
-	if (mysqli_connect_errno()) {
-	  echo "Failed to connect to MySQL: " . mysqli_connect_error();
+<script type="text/javascript">
+	function YNconfirm() { 
+	 if (window.confirm('User Saved!'))
+	 {
+	   window.location.href = '../home/adminHome.php';
+	 }
 	}
+</script>
 
+<?php 
 	if(isset($_POST['submit'])) {
 
-		$uid = mysqli_real_escape_string($conn, $_REQUEST['id']);
+		$uid = mysqli_insert_id($conn);
 		$name1 = mysqli_real_escape_string($conn, $_REQUEST['name']);
 		$sname1 = mysqli_real_escape_string($conn, $_REQUEST['sname']);
 		$email1 = mysqli_real_escape_string($conn, $_REQUEST['email']);
-		$username1 = mysqli_real_escape_string($conn, $_REQUEST['username']);
+		$username1 = mysqli_real_escape_string($conn, $_REQUEST['email']);
 		$password1 = mysqli_real_escape_string($conn, $_REQUEST['password']);
 		$rank1 = mysqli_real_escape_string($conn, $_REQUEST['rank']);
 		
@@ -160,6 +160,6 @@
 		$result= mysqli_query($conn, $query) or die(mysqli_error($conn));
 		mysqli_close($conn);
 		
-		echo "<script>goBack();</script>";
+		echo '<script type="text/javascript">','YNconfirm();','</script>';
 	}
 ?>

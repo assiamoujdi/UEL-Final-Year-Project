@@ -6,14 +6,14 @@
 		include "../db_handler.php"; 
 	?>
 	<head>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 		<link rel="stylesheet" href="css/style.css?<?php echo time(); ?> /">
 		<link rel="stylesheet" href="css/style1.css?<?php echo time(); ?> /">
 		<link rel="stylesheet" href="css/tile.css?<?php echo time(); ?> /">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script> 
-    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
+		<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
 		<title>Home</title>
 	</head>
 	<body>
@@ -195,7 +195,7 @@
 		                    	<td>'.$row1["total_marks"].'</td>
 		                    	<td>
                                 	<div class="btn-group">
-	                                      <button type="button" class="btn btn-success"><a href="../admin/view-marking-scheme.php?id=' . $acode . '">View Feedback</a></button>
+	                                      <button type="button" class="btn btn-success"><a href="../student/view-marking-scheme.php?id=' . $acode . '">View Feedback</a></button>
                                   	</div>
                              	</td>
 	                    	</tr>

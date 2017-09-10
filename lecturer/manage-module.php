@@ -2,7 +2,7 @@
 <html>
   <?php 
     include "../includes/header.php";
-    include "../includes/admin-navbar.php";
+    include "../includes/lecturer-navbar.php";
     include "../db_handler.php";
   ?>
   <meta charset="utf-8">
@@ -25,7 +25,7 @@
             </div>
           </div>                    
         </form> 
-    	<h1>List Of Modules</h1>
+    	<h1>Manage Modules</h1>
     	<hr>
       <div class="alert alert-danger" role="alert" id="alertUser" style="display: none;">
         <strong>IMPORTANT:</strong> Some modules are red as they do not weigh 100%.
@@ -42,10 +42,9 @@
                     <tr class="filters">
                         <th><input type="text" class="form-control" placeholder="Module Code" disabled></th>
                         <th><input type="text" class="form-control" placeholder="Module Name" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Module Leader" disabled></th>
                         <th><input type="text" class="form-control" placeholder="Description" disabled></th>
                         <th><input type="text" class="form-control" placeholder="Weight" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Mark Student" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Manage Module" disabled></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -58,23 +57,33 @@
                           SELECT * FROM module 
                           WHERE module_code LIKE '%".$search."%'
                           OR module_name LIKE '%".$search."%' 
-                          OR module_leader LIKE '%".$search."%' 
                          ";
                         }
                         else
                         {
+                         $leader = $_SESSION['id'];
+
+                         $select = "SELECT id FROM users WHERE username = '$leader'";
+                         $res = mysqli_query($conn, $select);
+
+                         while($getting = mysqli_fetch_array($res))
+                         {
+                            $leaderid = $getting['id'];
+                         }
+
                          $query = "
-                          SELECT DISTINCT module_code, module_name, module_leader, description, assessment1, assessment2, assessment3 FROM module
+                          SELECT DISTINCT module_code, module_name, description, assessment1, assessment2, assessment3 FROM module WHERE module_leader = '$leaderid' ORDER BY module_code asc
                          ";
                         }
                         $result = mysqli_query($conn, $query);
-                        if(mysqli_num_rows($result) > 0) {
+                        if(mysqli_num_rows($result) > 0)
+                        {
 
                          while($row = mysqli_fetch_array($result))
                          {
-                        $mcode = $row["module_code"];
+                        $module = $row["module_code"];
                             
-                        $sql = "SELECT assessment1, assessment2, assessment3 FROM module WHERE module_code = '$mcode'";
+                        $sql = "SELECT assessment1, assessment2, assessment3 FROM module WHERE module_code = '$module'";
 
                             $answer = mysqli_query($conn, $sql); // SAVES 'sql' QUERY RESULT
                             $test = mysqli_fetch_array($answer); // FETCHES THE DATA FROM THAT RESULT
@@ -117,19 +126,31 @@
                               $output .= '
                               <tr style="color: red">
                                 <td>'.$row["module_code"].'</td>
-                                <td>'.$row["module_name"].'</td> ';
-
-                                $lid = $row['module_leader'];
-                                $query1 = "SELECT name, surname FROM users WHERE id = '$lid'";
-                                $result1 = mysqli_query($conn, $query1);
-
-                                while ($row4 = mysqli_fetch_array($result1)) {
-                                  $output .= '<td>'.$row4["name"]." ".$row4["surname"].'</td>';
-                                }
-
-                                $output .= '
+                                <td>'.$row["module_name"].'</td>
                                 <td>'.$row["description"].'</td>
                                 <td>'. $moduleSize .'%</td>
+                                <td class="text-center">
+                                <div class="btn-group">
+                                    <div class="btn-group">
+                                      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Options <span class="caret"></span>
+                                      </button>
+                                      <ul class="dropdown-menu" role="menu">
+                                        <li>
+                                          <a href="add-assessment.php?id=' . $module . '">Add Assessment</a>
+                                        </li>
+                                        <li>
+                                          <a href="view-assessments-marking-scheme.php?id=' . $module . '">Create Marking Scheme</a>
+                                        </li>
+                                        <li>
+                                          <a href="assign-students.php?id=' . $module . '">Assign Students To Lecturers</a>
+                                        </li>
+                                        <li>
+                                          <a href="view-marks.php?id=' . $module . '">View Student Marks</a>
+                                        </li>
+                                      </ul>
+                                    </div>
+                                  </div>
+                                 </td>
                              </tr>';
                             }
 
@@ -137,20 +158,32 @@
                             $output .= '
                              <tr>
                               <td>'.$row["module_code"].'</td>
-                              <td>'.$row["module_name"].'</td> ';
-
-                              $lid = $row['module_leader'];
-                              $query1 = "SELECT name, surname FROM users WHERE id = '$lid'";
-                              $result1 = mysqli_query($conn, $query1);
-
-                              while ($row4 = mysqli_fetch_array($result1)) {
-                                $output .= '<td>'.$row4["name"]." ".$row4["surname"].'</td>';
-                              }
-
-                              $output .= '
+                              <td>'.$row["module_name"].'</td>
                               <td>'.$row["description"].'</td>
                               <td>'.$moduleSize.'%</td>
-                              </tr>
+                                <td class="text-center">
+                                <div class="btn-group">
+                                    <div class="btn-group">
+                                      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Options <span class="caret"></span>
+                                      </button>
+                                      <ul class="dropdown-menu" role="menu">
+                                        <li>
+                                          <a href="add-assessment.php?id=' . $module . '">Add Assessment</a>
+                                        </li>
+                                        <li>
+                                          <a href="view-assessments-marking-scheme.php?id=' . $module . '">Create Marking Scheme</a>
+                                        </li>
+                                        <li>
+                                          <a href="assign-students.php?id=' . $module . '">Assign Students To Lecturers</a>
+                                        </li>
+                                        <li>
+                                          <a href="view-marks.php?id=' . $module . '">View Student Marks</a>
+                                        </li>
+                                      </ul>
+                                    </div>
+                                  </div>
+                                 </td>
+                                </tr>
                               </div>
                             ';
                          }

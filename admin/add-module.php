@@ -21,6 +21,7 @@
 		}
 	?>
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -269,6 +270,15 @@
 	});	
 </script>
 
+<script type="text/javascript">
+	function YNconfirm() { 
+	 if (window.confirm('Module Saved!'))
+	 {
+	   window.location.href = '../home/adminHome.php';
+	 }
+	}
+</script>
+
 <?php 
 	if(isset($_POST['submit'])) {
 		$lid = mysqli_insert_id($conn);
@@ -286,6 +296,6 @@
 			}
 		}
 		mysqli_close($conn);
-		echo '<script type="text/javascript">','goBack();','</script>';
+		echo '<script type="text/javascript">','YNconfirm();','</script>';
 	}
 ?>

@@ -19,9 +19,6 @@
             // Define each name associated with an URL
             $urls = array(
                 'Home' => '../home/lecturerHome.php', 
-                'Project Ideas' => '#',
-                'Supervisors' => '#',
-                'Deadlines' => '#', 
                 'Logout' => '../logout.php',
             );
 
@@ -108,6 +105,7 @@
       padding: 0;
       margin: auto;
       z-index: 1000;
+      background-color: #363636;
       }
 
     .nav li {
@@ -115,6 +113,7 @@
       font-size: 1.2em;
       line-height: 40px;
       text-align: left;
+      background-color: #363636;
       }
 
     .nav a {

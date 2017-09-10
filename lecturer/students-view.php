@@ -1,10 +1,14 @@
+<!-- CREATE 'ENTER COURSEWORK MARK' AND 'ENTER EXAM MARK' FORMS -->
+<!-- 'ENTER COURSEWORK MARK' AND 'ENTER EXAM MARK' NEED TO ASK WHICH MODULE ITS FOR -->
+<!-- MAKE REMOVE STUDENT A POP UP INSTEAD OF A FORM IF POSSIBLE -->
+
 <!DOCTYPE html>
 <html>
-	<?php 
-		include "../includes/header.php";
-		include "../includes/admin-navbar.php";
+  <?php 
+    include "../includes/header.php";
+    include "../includes/lecturer-navbar.php";
     include "../db_handler.php";
-	?>
+  ?>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -18,18 +22,11 @@
 <body>
 <div class="container">
     <div class="row">
-        <form class="form-horizontal" style="float: right;" action="view-lecturers.php" method="post" name="export" enctype="multipart/form-data">
-          <div class="form-group">
-            <div class="col-md-4 col-md-offset-4">
-              <input type="submit" name="export" class="btn btn-success" value="Export As CSV File"/>
-            </div>
-          </div>                    
-        </form> 
-    	<h1>UEL Lecturers</h1>
-    	<hr>      
+      <h1>Assigned Students</h1>
+      <hr>      
         <div class="panel panel-primary filterable" style="border-color: #00bdaa;">
             <div class="panel-heading" style="background-color: #00bdaa;">
-                <h3 class="panel-title">Lecturers</h3>
+                <h3 class="panel-title">Students</h3>
                 <div class="pull-right">
                     <button class="btn btn-default btn-xs btn-filter"><span class="glyphicon glyphicon-filter"></span> Filter Search</button>
                 </div>
@@ -37,14 +34,17 @@
             <table class="table">
                 <thead>
                     <tr class="filters">
-                        <th><input type="text" class="form-control" placeholder="Staff ID" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Student ID" disabled></th>
                         <th><input type="text" class="form-control" placeholder="Full Name" disabled></th>
                         <th><input type="text" class="form-control" placeholder="Email" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Supervisor" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Second Supervisor" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Student Management" disabled></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                        $sql = "SELECT * FROM users WHERE rank = 'lecturer'"; 
+                        $sql = "SELECT * FROM users"; 
                         $result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
 
                       
@@ -57,25 +57,66 @@
                           WHERE name LIKE '%".$search."%'
                           OR surname LIKE '%".$search."%' 
                           OR email LIKE '%".$search."%' 
+                          OR username LIKE '%".$search."%' 
+                          OR supervisor LIKE '%".$search."%' 
+                          OR second supervisor LIKE '%".$search."%' 
                          ";
                         }
                         else
                         {
-                          $query = "SELECT * FROM users WHERE rank='lecturer' ORDER BY name asc";
+
+                          $query = "SELECT * FROM users WHERE rank='student' ORDER BY name asc";
                         }
 
                         $result = mysqli_query($conn, $query);
                         if(mysqli_num_rows($result) > 0)
                         {
 
-                       while($row = mysqli_fetch_array($result))
-                       {                           
+                         while($row = mysqli_fetch_array($result))
+                         {
+                        $username = $row["username"];
+                            
                           $output .= '
                            <tr>
                             <td>'.$row["id"].'</td>
                             <td>'.$row["name"]. ' ' .$row["surname"].'</td>
                             <td>'.$row["email"].'</td>
-                          </tr>
+                            <td>'.$row["supervisor"].'</td>
+                            <td>'.$row["second_supervisor"].'</td>
+
+                          <td class="text-center">
+                          <div class="btn-group">
+                              <div class="btn-group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Options <span class="caret"></span>
+                                </button>
+                                
+                                <ul class="dropdown-menu" role="menu">
+                                  <li>
+                                    <a href="add-mark.php?id=' . $username . '">Add Mark</a>
+                                  </li>
+                                  <li>
+                                    <a href="#">Add To Module</a>
+                                  </li>
+                                  <li>
+                                    <a href="#">Add Coursework Mark</a>
+                                  </li>
+                                  <li>
+                                    <a href="#">Add Exam Mark</a>
+                                  </li>
+                                  <li>
+                                    <a href="assign-supervisor.php?id=' . $username . '">Assign Supervisor</a>
+                                  </li>
+                                  <li>
+                                    <a href="edit-student.php?id=' . $username . '">Edit Student Details</a>
+                                  </li>
+                                  <li>
+                                    <a href="remove-student.php?id=' . $username . '">Remove Student</a>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </td>
+                           </tr>
                         </div>
                           ';
                          }
@@ -157,18 +198,3 @@
         });
     });
 </script>
-
-<?php 
-   if(isset($_POST["export"])){
-     
-      $result = "SELECT * FROM users WHERE rank = 'lecturer'";
-      $row = mysqli_query($conn, $result) or die(mysqli_error($conn));
-
-      $fp = fopen('../spreadsheets/lecturers.csv', 'w');
-
-      while($val = mysqli_fetch_array($row, MYSQLI_ASSOC)){
-          fputcsv($fp, $val);
-      }
-      fclose($fp); 
-    }  
-?>

@@ -1,13 +1,5 @@
 <?php
-$host = "localhost"; 
-$user = "root"; 
-$password = ""; 
-$database = "project"; 
- 
-$con = new mysqli($host, $user, $password, $database);
-if ($con->connect_error) {
-    die("Connection failed: " . $con->connect_error);
-}
+include "../db_handler.php"; 
  
 $message = "";
 if (isset($_POST['submit'])) {
@@ -29,7 +21,7 @@ if (isset($_POST['submit'])) {
 
         (id,name,surname,email,username,password,rank,level)
 eof;
-        if (!$result = mysqli_query($con, $query)) {
+        if (!$result = mysqli_query($conn, $query)) {
             exit(mysqli_error($con));
         }
         $message = "CSV file successfully imported!";
@@ -53,7 +45,7 @@ $users = '<table class="table table-bordered">
 ';
 
 $query = "SELECT * FROM users";
-if (!$result = mysqli_query($con, $query)) {
+if (!$result = mysqli_query($conn, $query)) {
     exit(mysqli_error($con));
 }
 
@@ -89,6 +81,13 @@ $users .= '</table>';
     <meta charset="UTF-8">
     <!-- Bootstrap CSS File  -->
     <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.2/css/bootstrap-slider.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.2/bootstrap-slider.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
     <title></title>
 </head>
 <body>
@@ -139,12 +138,6 @@ $users .= '</table>';
                 </thead>
                 <tbody>
                     <?php
-                        $conn = mysqli_connect('localhost', 'root', '', 'project');
-
-                        if (!$conn) {
-                          die("Connection failed: ".mysqli_connect_err());
-                        }
-
                         $output = '';
                         if(isset($_POST["query"]))
                         {

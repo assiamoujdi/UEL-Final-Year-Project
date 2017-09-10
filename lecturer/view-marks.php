@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
-	<?php 
-		include "../includes/header.php";
-		include "../includes/admin-navbar.php";
+  <?php 
+    include "../includes/header.php";
+    include "../includes/lecturer-navbar.php";
     include "../db_handler.php";
-	?>
+  ?>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -18,18 +18,24 @@
 <body>
 <div class="container">
     <div class="row">
-        <form class="form-horizontal" style="float: right;" action="view-lecturers.php" method="post" name="export" enctype="multipart/form-data">
-          <div class="form-group">
-            <div class="col-md-4 col-md-offset-4">
-              <input type="submit" name="export" class="btn btn-success" value="Export As CSV File"/>
-            </div>
-          </div>                    
-        </form> 
-    	<h1>UEL Lecturers</h1>
-    	<hr>      
+      <h1>List Of Marks For <?php 
+        if (isset($_GET['id'])) {
+          $user = mysqli_real_escape_string($conn, $_GET['id']);
+
+          $sql = "SELECT * FROM module WHERE module_code = '$user'"; 
+          $result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
+        
+              while($row = mysqli_fetch_array($result)) { 
+                $mcode = $row['module_code'];
+                $mname = $row['module_name'];
+          }
+          echo $mcode . " - " . $mname;
+        }
+      ?> </h1>
+      <hr>
         <div class="panel panel-primary filterable" style="border-color: #00bdaa;">
             <div class="panel-heading" style="background-color: #00bdaa;">
-                <h3 class="panel-title">Lecturers</h3>
+                <h3 class="panel-title"><?php echo $mcode . " - " . $mname ?> Marks</h3>
                 <div class="pull-right">
                     <button class="btn btn-default btn-xs btn-filter"><span class="glyphicon glyphicon-filter"></span> Filter Search</button>
                 </div>
@@ -37,46 +43,53 @@
             <table class="table">
                 <thead>
                     <tr class="filters">
-                        <th><input type="text" class="form-control" placeholder="Staff ID" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Full Name" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Email" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Module Code" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Assessment Code" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Student ID" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Mark 1" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Mark 2" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Mark 3" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Final Mark" disabled></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                        $sql = "SELECT * FROM users WHERE rank = 'lecturer'"; 
-                        $result = mysqli_query($conn, $sql) or die(mysqli_error($conn));
-
-                      
                         $output = '';
                         if(isset($_POST["query"]))
                         {
                          $search = mysqli_real_escape_string($conn, $_POST["query"]);
                          $query = "
-                          SELECT * FROM users 
-                          WHERE name LIKE '%".$search."%'
-                          OR surname LIKE '%".$search."%' 
-                          OR email LIKE '%".$search."%' 
+                          SELECT DISTINCT * FROM marking_scheme 
+                          WHERE module_code LIKE '%".$search."%'
+                          OR assessment_code LIKE '%".$search."%' 
+                          OR mark1 LIKE '%".$search."%' 
+                          OR mark2 LIKE '%".$search."%' 
+                          OR mark3 LIKE '%".$search."%' 
+                          OR final_mark LIKE '%".$search."%' 
                          ";
                         }
                         else
                         {
-                          $query = "SELECT * FROM users WHERE rank='lecturer' ORDER BY name asc";
+                         $query = "
+                          SELECT module_code, assessment_code, student_id, mark1, mark2, mark3, final_mark FROM marks WHERE module_code = '$mcode'
+                         ";
                         }
-
                         $result = mysqli_query($conn, $query);
                         if(mysqli_num_rows($result) > 0)
                         {
 
-                       while($row = mysqli_fetch_array($result))
-                       {                           
+                         while($row = mysqli_fetch_array($result))
+                         {                            
                           $output .= '
                            <tr>
-                            <td>'.$row["id"].'</td>
-                            <td>'.$row["name"]. ' ' .$row["surname"].'</td>
-                            <td>'.$row["email"].'</td>
-                          </tr>
-                        </div>
+                            <td>'.$row["module_code"].'</td>
+                            <td>'.$row["assessment_code"].'</td>
+                            <td>'.$row["student_id"].'</td>
+                            <td>'.$row["mark1"].'</td>
+                            <td>'.$row["mark2"].'</td>
+                            <td>'.$row["mark3"].'</td>
+                            <td>'.$row["final_mark"].'</td>
+                           </tr>
                           ';
                          }
                          echo $output;
@@ -88,6 +101,7 @@
         </div>
     </div>
 </body>
+
 </html>
 
 <style type="text/css">
@@ -135,6 +149,7 @@
         $('.filterable .filters input').keyup(function(e){
             var code = e.keyCode || e.which;
             if (code == '9') return;
+
             var $input = $(this),
             inputContent = $input.val().toLowerCase(),
             $panel = $input.parents('.filterable'),
@@ -146,29 +161,14 @@
                 var value = $(this).find('td').eq(column).text().toLowerCase();
                 return value.indexOf(inputContent) === -1;
             });
-            
+
             $table.find('tbody .no-result').remove();
+            
             $rows.show();
             $filteredRows.hide();
-
             if ($filteredRows.length === $rows.length) {
                 $table.find('tbody').prepend($('<tr class="no-result text-center"><td colspan="'+ $table.find('.filters th').length +'">No result found</td></tr>'));
             }
         });
     });
 </script>
-
-<?php 
-   if(isset($_POST["export"])){
-     
-      $result = "SELECT * FROM users WHERE rank = 'lecturer'";
-      $row = mysqli_query($conn, $result) or die(mysqli_error($conn));
-
-      $fp = fopen('../spreadsheets/lecturers.csv', 'w');
-
-      while($val = mysqli_fetch_array($row, MYSQLI_ASSOC)){
-          fputcsv($fp, $val);
-      }
-      fclose($fp); 
-    }  
-?>

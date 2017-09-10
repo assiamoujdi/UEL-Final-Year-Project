@@ -2,7 +2,7 @@
 <html>
   <?php 
     include "../includes/header.php";
-    include "../includes/lecturer-navbar.php";
+    include "../includes/admin-navbar.php";
     include "../db_handler.php";
   ?>
   <meta charset="utf-8">
@@ -57,12 +57,6 @@
                 </thead>
                 <tbody>
                     <?php
-                        $conn = mysqli_connect('localhost', 'root', '', 'project');
-
-                        if (!$conn) {
-                          die("Connection failed: ".mysqli_connect_err());
-                        }
-
                         $output = '';
                         if(isset($_POST["query"]))
                         {

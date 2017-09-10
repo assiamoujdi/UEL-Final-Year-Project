@@ -31,7 +31,7 @@
 		</h1>
 		<hr>
 			<div>
-				<button type="button" class="btn btn-success"><a href="../admin/view-modules.php">View Modules</a></button>
+				<button type="button" class="btn btn-success"><a href="../lecturer/view-modules.php">View Modules</a></button>
 				<?php 
 					$leader = $_SESSION['id'];
 
@@ -50,14 +50,14 @@
                     $result = mysqli_query($conn, $query);
                     if(mysqli_num_rows($result) > 0) {
             	?>
-					<button type="button" class="btn btn-danger"><a href="../admin/manage-module.php">Manage Modules</a></button>
+					<button type="button" class="btn btn-danger"><a href="../lecturer/manage-module.php">Manage Modules</a></button>
 				<?php
                     }
 				?>
-				<button type="button" class="btn btn-primary"><a href="../admin/view-assessments.php">View Assessments</a></button>
-				<button type="button" class="btn btn-warning"><a href="../admin/view-marking-schemes.php">View Marking Schemes</a></button>
-				<button type="button" class="btn btn-info"><a href="../supervisor/view-students.php">View Students</a></button>
-				<button type="button" class="btn btn-info" style="background-color: purple;"><a href="../admin/view-lecturers.php">View Lecturers</a></button>
+				<button type="button" class="btn btn-primary"><a href="../lecturer/view-assessments.php">View Assessments</a></button>
+				<button type="button" class="btn btn-warning"><a href="../lecturer/view-marking-schemes.php">View Marking Schemes</a></button>
+				<button type="button" class="btn btn-info"><a href="../lecturer/view-students.php">View Students</a></button>
+				<button type="button" class="btn btn-info" style="background-color: purple;"><a href="../lecturer/view-lecturers.php">View Lecturers</a></button>
 			</div>
 		<br>
 		<hr>
@@ -81,12 +81,6 @@
 	                </thead>
 	                <tbody>
 	                    <?php
-	                        $conn = mysqli_connect('localhost', 'root', '', 'project');
-
-	                        if (!$conn) {
-	                          die("Connection failed: ".mysqli_connect_err());
-	                        }
-
 	                        $output = '';
 	                        if(isset($_POST["query"]))
 	                        {
@@ -116,7 +110,7 @@
 		                            <td>'.$row["module_name"].'</td>
 		                            <td>'.$row["student_id"].'</td>
 		                            <td>
-		                            	<button type="button" class="btn btn-success"><a href="../supervisor/add-single-mark.php?id=' . $lid . '">Add Mark</a></button>
+		                            	<button type="button" class="btn btn-success"><a href="../lecturer/add-single-mark.php?id=' . $lid . '">Add Mark</a></button>
 		                            </td>
 	                              </tr>
 		                          ';
